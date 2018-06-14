@@ -13,11 +13,11 @@ function initMap() {
                 elementType: 'labels.text.fill',
                 stylers: [{color: '#d59563'}]
               },
-              // {
-              //   featureType: 'poi.park',
-              //   elementType: 'geometry',
-              //   stylers: [{color: '#263c3f'}]
-              // },
+              {
+                featureType: 'poi.park',
+                elementType: 'geometry',
+                stylers: [{color: '#263c3f'}]
+              },
               {
                 featureType: 'road',
                 elementType: 'geometry',

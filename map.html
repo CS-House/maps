@@ -1,23 +1,70 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-       /* Set the size of the div element that contains the map */
-      #map {
-        height: 700px;  /* The height is 400 pixels */
-        width: 100%;  /* The width is the width of the web page */
-       }
-    </style>
-  </head>
-  <body>
-    <h3>Demo</h3>
-    <!--The div element for the map -->
-    <div id="map"></div>
 
-    <script type="text/javascript" src="map.js"></script>
+<head>
+    <meta charset='utf-8' />
+    <title>Animate a series of images</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" type="text/css" href="map.css">
+</head>
+
+<body>
+
+    <div id='map'></div>
+    <script>
+
+        // Creating an ES6 generic hashmap
+        var markerMap = new Map();
+
+        function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        class Location {
+            constructor(latitude, longitude) {
+                this.latitude = latitude;
+                this.longitude = longitude;
+            }
+        }
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoibXVudWt1dGxhIiwiYSI6ImNqaWFoZDE1YzAxdnEzcG54dDd1M3dhbWEifQ.JdHu_4E9Ky3n-73LSUfwdQ';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v9',
+            zoom: 5,
+            center: [45.789, 51.874]
+        });
+
+        map.on('load', function () {
+            console.log("Loaded");
+        });
+
+        function addToMap(deviceId, location) {
+            var marker = new mapboxgl.Marker().setLngLat([location.latitude, location.longitude]);
+            marker.addTo(map);
+            //markerMap.set(deviceId, marker);
+        }
         
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTiIJBv3Pa7AYJ0nzH-1_k-uBqLoXcjJw&callback=initMap">
+        function updateLocationOfOneDevice(latitude, longitude) {
+          
+        }
+
+      //    addToMap(1, new Location(40.789, 51.874))
+
+        setInterval(() => {
+            console.log("Hello");
+            var lat = getRandomArbitrary(40, 45);
+            var lon = getRandomArbitrary(50, 55);
+            addToMap(1, new Location(lat, lon));
+            console.log(markerMap)
+        }, 3000);
+
     </script>
-  </body>
+
+</body>
+
 </html>
+
+

@@ -4,7 +4,7 @@
     <style>
        /* Set the size of the div element that contains the map */
       #map {
-        height: 700px;  /* The height is 400 pixels */
+        height: 600px;  
         width: 100%;  /* The width is the width of the web page */
        }
     </style>
@@ -31,15 +31,97 @@ function initMap() {
   }
 
   var mapOptions = {
+    center: new google.maps.LatLng(25.36,13.044),
     zoom: 4,
-    center: new google.maps.LatLng(25.36,13.044)
+    styles: [
+      {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+      {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+      {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+      {
+        featureType: 'administrative.locality',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#d59563'}]
+      },
+      {
+        featureType: 'poi',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#d59563'}]
+      },
+      {
+        featureType: 'poi.park',
+        elementType: 'geometry',
+        stylers: [{color: '#263c3f'}]
+      },
+      {
+        featureType: 'poi.park',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#6b9a76'}]
+      },
+      {
+        featureType: 'road',
+        elementType: 'geometry',
+        stylers: [{color: '#38414e'}]
+      },
+      {
+        featureType: 'road',
+        elementType: 'geometry.stroke',
+        stylers: [{color: '#212a37'}]
+      },
+      {
+        featureType: 'road',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#9ca5b3'}]
+      },
+      {
+        featureType: 'road.highway',
+        elementType: 'geometry',
+        stylers: [{color: '#746855'}]
+      },
+      {
+        featureType: 'road.highway',
+        elementType: 'geometry.stroke',
+        stylers: [{color: '#1f2835'}]
+      },
+      {
+        featureType: 'road.highway',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#f3d19c'}]
+      },
+      {
+        featureType: 'transit',
+        elementType: 'geometry',
+        stylers: [{color: '#2f3948'}]
+      },
+      {
+        featureType: 'transit.station',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#d59563'}]
+      },
+      {
+        featureType: 'water',
+        elementType: 'geometry',
+        stylers: [{color: '#17263c'}]
+      },
+      {
+        featureType: 'water',
+        elementType: 'labels.text.fill',
+        stylers: [{color: '#515c6d'}]
+      },
+      {
+        featureType: 'water',
+        elementType: 'labels.text.stroke',
+        stylers: [{color: '#17263c'}]
+      }
+    ]
   }
 
-  var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  var map = new google.maps.Map(document.getElementById('map'), mapOptions)
 
   function addToMap(deviceId, location) {
       var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(location.latitude, location.longitude)
+        position: new google.maps.LatLng(location.latitude, location.longitude),
+        Animation: google.maps.Animation.DROP,
+        icon: 'truck.png'
       })
       marker.setMap(map);
       markerMap.set(deviceId, marker);
@@ -47,7 +129,7 @@ function initMap() {
 
   setInterval(() => {
             console.log("Hello");
-            var lat = getRandomArbitrary(10, 20);
+            var lat = getRandomArbitrary(20, 30);
             var lon = getRandomArbitrary(15, 20);
             addToMap(1, new Location(lat, lon));
   }, 5000);

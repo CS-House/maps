@@ -1,17 +1,19 @@
-var pubnub = require('pubnub')
+var PubNub = require('pubnub')
 
-var pn = new pubnub({
-    subscribeKey: "sub-c-1858fa40-7158-11e8-9683-aecdde7ceb31",
+var pn = new PubNub({
+    subscribeKey: "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe",
     publishKey: "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a",
     ssl: false
-})
+});
 
-pn.subscribe({
-    channels: ['stream']
-})
 
 pn.addListener({
-    message: (message) => {
-        console.log(message)
+    message: function (m) {
+        // handle message
+        console.log(m.message);   
     }
-})
+});
+
+pn.subscribe({
+    channels: ['stream'],
+});

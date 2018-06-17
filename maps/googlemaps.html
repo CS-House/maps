@@ -12,51 +12,85 @@
   <body>
     <h3>My Google Maps Demo</h3>
     <!--The div element for the map -->
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.21.2.js"></script>
+
     <div id="map"></div>
     <script>
 
-function initMap() {
+      console.log("Hello");
 
-  var markerMap = new Map();
-
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  class Location {
-      constructor(latitude, longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+      var pn = new PubNub({
+          subscribeKey: "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe",
+          publishKey: "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a",
+          ssl: false
+      });
+  
+      console.log(pn);
+  
+      pn.addListener({
+          message: function (m) {
+              // handle message
+              console.log(m);   
+          }
+      });
+  
+      pn.subscribe({
+          channels: ['exp-channel'],
+      });
+  
+      var publishConfig = {
+          channel : "exp-channel",
+          message: { 
+              "title": "greeting",
+              "description": "hello world!"
+          }
       }
-  }
+      pn.publish(publishConfig, function(status, response) {
+          console.log(status, response);
+      })
 
-  var mapOptions = {
-    center: new google.maps.LatLng(25.36,13.044),
-    zoom: 4,
-    styles: [
-      {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
-      {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
-      {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
-      {
-        featureType: 'administrative.locality',
-        elementType: 'labels.text.fill',
-        stylers: [{color: '#d59563'}]
-      },
-      {
-        featureType: 'poi',
-        elementType: 'labels.text.fill',
-        stylers: [{color: '#d59563'}]
-      },
-      {
-        featureType: 'poi.park',
-        elementType: 'geometry',
-        stylers: [{color: '#263c3f'}]
-      },
-      {
-        featureType: 'poi.park',
-        elementType: 'labels.text.fill',
-        stylers: [{color: '#6b9a76'}]
-      },
+  function initMap() {
+
+    var markerMap = new Map();
+
+    function getRandomArbitrary(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    class Location {
+        constructor(latitude, longitude) {
+          this.latitude = latitude;
+          this.longitude = longitude;
+        }
+    }
+
+    var mapOptions = {
+      center: new google.maps.LatLng(25.36,13.044),
+      zoom: 4,
+      styles: [
+        {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+        {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+        {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+        {
+          featureType: 'administrative.locality',
+          elementType: 'labels.text.fill',
+          stylers: [{color: '#d59563'}]
+        },
+        {
+          featureType: 'poi',
+          elementType: 'labels.text.fill',
+          stylers: [{color: '#d59563'}]
+        },
+        {
+          featureType: 'poi.park',
+          elementType: 'geometry',
+          stylers: [{color: '#263c3f'}]
+        },
+        {
+          featureType: 'poi.park',
+          elementType: 'labels.text.fill',
+          stylers: [{color: '#6b9a76'}]
+        },
       {
         featureType: 'road',
         elementType: 'geometry',

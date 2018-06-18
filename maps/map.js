@@ -4,14 +4,6 @@ var pn = new PubNub({
     ssl: false
 });
 
-
-pn.addListener({
-    message: function (m) {
-        // handle message
-        console.log(JSON.parse(m.message)["Latitude"], JSON.parse(m.message)["Longitude"]);   
-    }
-});
-
 pn.subscribe({
     channels: ['exp-channel'],
 });
@@ -126,9 +118,13 @@ function initMap() {
         markerMap.set(deviceId, marker);
     }
 
-    setInterval(() => {
-        var lat = getRandomArbitrary(20, 50);
-        var lon = getRandomArbitrary(0, 30);
-        addToMap(1, new Location(lat, lon));
-    }, 5000);
+        pn.addListener({
+            message: function (m) {
+                // handle response from publisher message
+                addToMap(1, new Location(JSON.parse(m.message)["Latitude"], JSON.parse(m.message)["Longitude"]));
+
+                console.log(JSON.parse(m.message)["Latitude"], JSON.parse(m.message)["Longitude"]);   
+            }
+        });
+
 }

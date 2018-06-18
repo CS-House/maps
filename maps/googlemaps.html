@@ -22,9 +22,7 @@
           publishKey: "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a",
           ssl: false
       });
-  
-      console.log(pn);
-  
+    
       pn.addListener({
           message: function (m) {
               // handle message
@@ -141,17 +139,16 @@
   function addToMap(deviceId, location) {
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng(location.latitude, location.longitude),
-        Animation: google.maps.Animation.DROP,
-        icon: 'truck.png'
+       // Animation: google.maps.Animation.DROP,
+       // icon: 'truck.png'
       })
       marker.setMap(map);
       markerMap.set(deviceId, marker);
   }
 
   setInterval(() => {
-            console.log("Hello");
             var lat = getRandomArbitrary(20, 50);
-            var lon = getRandomArbitrary(15, 20);
+            var lon = getRandomArbitrary(0, 30);
             addToMap(1, new Location(lat, lon));
   }, 5000);
 }

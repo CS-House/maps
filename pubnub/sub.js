@@ -10,10 +10,10 @@ var pn = new PubNub({
 pn.addListener({
     message: function (m) {
         // handle message
-        console.log(m.message);   
+        console.log(JSON.parse(m.message)["Latitude"]);   
     }
 });
 
 pn.subscribe({
-    channels: ['stream'],
+    channels: ['exp-channel'],
 });

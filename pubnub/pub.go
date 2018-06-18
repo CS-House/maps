@@ -1,17 +1,25 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"math/rand"
+	"strconv"
+	"time"
 
 	"github.com/pubnub/go/messaging"
 )
 
-const (
-	pubkey = "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a"
-	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
-)
-
 func main() {
+
+	rand.Seed(time.Now().UnixNano())
+
+	p := &Packet{}
+	p.GetRandomLatAndLong(10, 50)
+
+	json, _ := json.Marshal(p)
+
+	fmt.Println(string(json))
 
 	pubnub := messaging.NewPubnub(
 		pubkey,
@@ -25,11 +33,11 @@ func main() {
 	successChannel := make(chan []byte)
 	errorChannel := make(chan []byte)
 
-	message := "hello world from go publisher"
+	//message := "hello world from go publisher"
 
-	go pubnub.Publish(
-		"stream",
-		message,
+	pubnub.Publish(
+		"exp-channel",
+		string(json),
 		successChannel,
 		errorChannel)
 
@@ -41,4 +49,19 @@ func main() {
 	case <-messaging.Timeout():
 		fmt.Println("Publish() timeout")
 	}
+}
+
+const (
+	pubkey = "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a"
+	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
+)
+
+type Packet struct {
+	Latitude  string `json:"Latitude"`
+	Longitude string `json:"Longitude"`
+}
+
+func (p *Packet) GetRandomLatAndLong(min, max float64) {
+	p.Latitude = strconv.FormatFloat(min+rand.Float64()*(max-min), 'f', 3, 64)
+	p.Longitude = strconv.FormatFloat(min+rand.Float64()*(max-min), 'f', 3, 64)
 }

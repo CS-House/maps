@@ -27,8 +27,8 @@ func main() {
 
 	message := "hello world from go publisher"
 
-	go pubnub.Publish(
-		"stream",
+	pubnub.Publish(
+		"exp-channel",
 		message,
 		successChannel,
 		errorChannel)

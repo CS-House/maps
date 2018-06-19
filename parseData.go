@@ -1,4 +1,4 @@
-package gpsparser
+package main
 
 import (
 	"bytes"
@@ -30,35 +30,53 @@ type GPSParsed struct {
 	Voltage        float64 // Analog voltage
 }
 
+/*
+Constants ...
+*/
 const (
 	DDMMYYHHMMSS = "020106:150405"
 	HHMMSSDDMMYY = "150405:010206"
 	DEBUGGING    = false
 )
 
+func main() {
+	input := "GTPL $1,867322035135813,A,290518,062804,18.709738,N,80.068397,E,0,406,309,11,0,14,1,0,26.4470#"
+
+	input2 := "*ZJ,2030295125,V1,073614,A,3127.7080,N,7701.8360,E,0.00,0.00,040618,00000000#"
+
+	fmt.Println(Parse(&input2))
+	fmt.Println(Parse(&input))
+}
+
 // Parse function takes in a raw string and puts its GPS data in the channel
 // Silently fails if it cannot parse
-func Parse(raw *string, c chan *string) {
+func Parse(raw *string) string {
 	if *raw == "" {
 		if DEBUGGING {
 			log.Printf("Empty message received")
 		}
-		return
+		return "Empty message received"
 	}
 
 	if strings.HasPrefix(*raw, "GTPL") {
-		go AIS140Parse(raw, c)
+		ais := AIS140Parse(raw)
+		return ais
 	} else if strings.HasPrefix(*raw, "*ZJ") {
-		go WTDParse(raw, c)
+		zt := WTDParse(raw)
+		return zt
 	} else {
 		if DEBUGGING {
 			log.Printf("Invalid or unsupported protocol")
 		}
-		return
+		return "Invalid or unsupported protocol"
 	}
+	return ""
 }
 
-func AIS140Parse(raw *string, c chan *string) {
+/*
+Parsing AIS140 Device Data ...
+*/
+func AIS140Parse(raw *string) string {
 	g := &GPSParsed{}
 	g.Raw = raw
 	g.Protocol = "AIS140"
@@ -265,20 +283,26 @@ func AIS140Parse(raw *string, c chan *string) {
 
 		jsonBuffer.WriteString(`}}]}`)
 		jsonString := jsonBuffer.String()
-		c <- &jsonString
+		//c <- &jsonString
 		// c <- g
 		if DEBUGGING {
 			log.Printf("Parsed dumped")
 		}
+
+		return jsonString
 	}
+	return ""
 }
 
-func WTDParse(raw *string, c chan *string) {
+/*
+Parsing a different format of device ...
+*/
+func WTDParse(raw *string) string {
 	if *raw == "*ZJ#" {
 		if DEBUGGING {
 			log.Printf("Empty message")
 		}
-		return
+		return "Empty message"
 	}
 
 	g := &GPSParsed{}
@@ -289,7 +313,7 @@ func WTDParse(raw *string, c chan *string) {
 		if DEBUGGING {
 			log.Printf("Not a CSV message: %s", *raw)
 		}
-		return
+		return "Not a CSV message"
 	}
 
 	// For any packet type we have the following fields Uniqid, TimeDate, Lat, Long
@@ -300,7 +324,7 @@ func WTDParse(raw *string, c chan *string) {
 		if DEBUGGING {
 			log.Printf("%s", e)
 		}
-		return
+		return ""
 	}
 	// fmt.Println(timestamp)
 	// GPSParser returns in unix seconds, but thingsboard wants it in millis
@@ -310,7 +334,7 @@ func WTDParse(raw *string, c chan *string) {
 		if DEBUGGING {
 			log.Printf("Parsing error for latitude %s", fields[5])
 		}
-		return
+		return "Not a CSV message"
 	} else {
 		g.ActualLat = float64(lat) / 100
 	}
@@ -324,7 +348,7 @@ func WTDParse(raw *string, c chan *string) {
 		if DEBUGGING {
 			log.Printf("Parsing error for longitude %s", fields[7])
 		}
-		return
+		return "Parsing error for longitude"
 	} else {
 		g.ActualLng = float64(lng) / 100
 	}
@@ -340,5 +364,6 @@ func WTDParse(raw *string, c chan *string) {
 	jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 	jsonBuffer.WriteString(`}}]}`)
 	jsonString := jsonBuffer.String()
-	c <- &jsonString
+
+	return jsonString
 }

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
-	"bytes"
 )
 
 type GPSParsed struct {
@@ -55,7 +55,7 @@ func Parse(raw *string) string {
 			log.Printf("Invalid or unsupported protocol")
 		}
 		return "Invalid or unsupported protocol"
- 	}
+	}
 
 AIS140Parse:
 	g := &GPSParsed{}

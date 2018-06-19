@@ -4,13 +4,6 @@ var pn = new PubNub({
     ssl: false
 });
 
-pn.addListener({
-    message: function (m) {
-        // handle message
-        console.log(m);
-    }
-});
-
 pn.subscribe({
     channels: ['exp-channel'],
 });
@@ -120,16 +113,18 @@ function initMap() {
     function addToMap(deviceId, location) {
         var marker = new google.maps.Marker({
             position: new google.maps.LatLng(location.latitude, location.longitude),
-            // Animation: google.maps.Animation.DROP,
-            // icon: 'truck.png'
         })
         marker.setMap(map);
         markerMap.set(deviceId, marker);
     }
 
-    setInterval(() => {
-        var lat = getRandomArbitrary(20, 50);
-        var lon = getRandomArbitrary(0, 30);
-        addToMap(1, new Location(lat, lon));
-    }, 5000);
+        pn.addListener({
+            message: function (m) {
+                // handle response from publisher message
+                addToMap(1, new Location(JSON.parse(m.message)["Latitude"], JSON.parse(m.message)["Longitude"]));
+
+                console.log(JSON.parse(m.message)["Latitude"], JSON.parse(m.message)["Longitude"]);   
+            }
+        });
+
 }

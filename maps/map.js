@@ -113,9 +113,9 @@ function initMap() {
                 stylers: [{color: '#17263c'}]
             }
         ]
-    }
+    };
 
-    var map = new google.maps.Map(document.getElementById('map'), mapOptions)
+    const map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
     function addToMap(deviceId, location) {
         var marker = new google.maps.Marker({

@@ -6,7 +6,6 @@ var pn = new PubNub({
     ssl: false
 });
 
-
 pn.addListener({
     message: function (m) {
         // handle message
@@ -15,5 +14,5 @@ pn.addListener({
 });
 
 pn.subscribe({
-    channels: ['stream'],
+    channels: ['exp-channel'],
 });

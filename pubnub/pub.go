@@ -7,10 +7,20 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gowtham-munukutla/maps/parsepub"
 	"github.com/pubnub/go/messaging"
 )
 
 func main() {
+
+	input := "GTPL $1,867322035135813,A,290518,062804,18.709738,N,80.068397,E,0,406,309,11,0,14,1,0,26.4470#"
+
+	input2 := "*ZJ,2030295125,V1,073614,A,3127.7080,N,7701.8360,E,0.00,0.00,040618,00000000#"
+
+	fmt.Println(parsepub.Parse(&input2))
+	fmt.Println(parsepub.Parse(&input))
+
+	//o1 := parsepub.Parse(&input)
 
 	rand.Seed(time.Now().UnixNano())
 

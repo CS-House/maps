@@ -58,9 +58,10 @@ func handler(conn net.Conn) {
 		select {
 		case data := <-dataChan:
 			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), string(data))
-			for i := range clients {
-				clients[i].Write(data)
-			}
+
+			// for i := range clients {
+			// 	clients[i].Write(data)
+			// }
 		case err := <-errorChan:
 			log.Println("[SERVER] An error occured:", err.Error())
 			return

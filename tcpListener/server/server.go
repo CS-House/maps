@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 )
 
 const (
@@ -10,22 +13,26 @@ const (
 )
 
 var clients []net.Conn
+var count = 0
 
 func main() {
-	l, err := net.Listen("tcp", ":"+port)
+	ln, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer l.Close()
-	log.Print("Server listening...")
+	defer ln.Close()
+	go signalHandler()
+
+	log.Print("[SERVER] listening...")
 
 	for {
-		conn, err := l.Accept()
+		conn, err := ln.Accept()
+		count++
 		if err != nil {
 			log.Print(err)
 		}
 
-		log.Printf("Client connected %s -> %s \n", conn.RemoteAddr(), conn.LocalAddr())
+		log.Printf("[SERVER] Client connected %s -> %s -- Number of clients connected (%d)\n", conn.RemoteAddr(), conn.LocalAddr(), count)
 		// Add the client to the connection array
 		clients = append(clients, conn)
 
@@ -34,7 +41,8 @@ func main() {
 }
 
 func removeClient(conn net.Conn) {
-	log.Printf("Client %s disconnected", conn.RemoteAddr())
+	log.Printf("[SERVER] Client %s disconnected", conn.RemoteAddr())
+	count--
 	conn.Close()
 	//remove client from clients here
 }
@@ -49,12 +57,12 @@ func handler(conn net.Conn) {
 	for {
 		select {
 		case data := <-dataChan:
-			log.Printf("Client %s sent: %s", conn.RemoteAddr(), string(data))
+			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), string(data))
 			for i := range clients {
 				clients[i].Write(data)
 			}
 		case err := <-errorChan:
-			log.Println("An error occured:", err.Error())
+			log.Println("[SERVER] An error occured:", err.Error())
 			return
 		}
 	}
@@ -70,4 +78,18 @@ func readWrapper(conn net.Conn, dataChan chan []byte, errorChan chan error) {
 		}
 		dataChan <- buf[:reqLen]
 	}
+}
+
+func signalHandler() {
+	sigchan := make(chan os.Signal, 1)
+	signal.Notify(sigchan, os.Interrupt)
+	go func() {
+		for sig := range sigchan {
+			log.Printf("[SERVER] Closing due to Signal: %s", sig)
+			log.Printf("[SERVER] Graceful shutdown")
+			fmt.Println("Done.")
+			// Exit cleanly
+			os.Exit(0)
+		}
+	}()
 }

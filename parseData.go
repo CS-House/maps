@@ -1,4 +1,4 @@
-package main
+package gpsparser
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Currently supports AIS140
 type GPSParsed struct {
 	Raw            *string // Just a copy of the raw data that was parsed
 	Protocol       string  // Which protocol this message was parsed as
@@ -30,34 +31,34 @@ type GPSParsed struct {
 }
 
 const (
-	TIMEDATEFORMAT = "020106:150405"
-	DEBUGGING      = false
+	DDMMYYHHMMSS = "020106:150405"
+	HHMMSSDDMMYY = "150405:010206"
+	DEBUGGING    = false
 )
 
-func main() {
-	input := "GTPL $1,867322035135813,A,290518,062804,18.709738,N,80.068397,E,0,406,309,11,0,14,1,0,26.4470#"
-
-	fmt.Println(Parse(&input))
-}
-
-func Parse(raw *string) string {
+// Parse function takes in a raw string and puts its GPS data in the channel
+// Silently fails if it cannot parse
+func Parse(raw *string, c chan *string) {
 	if *raw == "" {
 		if DEBUGGING {
 			log.Printf("Empty message received")
 		}
-		return "Empty message received"
+		return
 	}
 
 	if strings.HasPrefix(*raw, "GTPL") {
-		goto AIS140Parse
+		go AIS140Parse(raw, c)
+	} else if strings.HasPrefix(*raw, "*ZJ") {
+		go WTDParse(raw, c)
 	} else {
 		if DEBUGGING {
 			log.Printf("Invalid or unsupported protocol")
 		}
-		return "Invalid or unsupported protocol"
+		return
 	}
+}
 
-AIS140Parse:
+func AIS140Parse(raw *string, c chan *string) {
 	g := &GPSParsed{}
 	g.Raw = raw
 	g.Protocol = "AIS140"
@@ -91,8 +92,8 @@ AIS140Parse:
 
 		// For any packet type we have the following fields Uniqid, TimeDate, Lat, Long
 		g.Uniqid = fields[1]
-		Yy_mm_dd_hh_mm_ss := strings.Join([]string{fields[3], fields[4]}, ":")
-		timestamp, e := time.Parse(TIMEDATEFORMAT, Yy_mm_dd_hh_mm_ss)
+		Dd_mm_yy_hh_mm_ss := strings.Join([]string{fields[3], fields[4]}, ":")
+		timestamp, e := time.Parse(DDMMYYHHMMSS, Dd_mm_yy_hh_mm_ss)
 		if e != nil {
 			if DEBUGGING {
 				log.Printf("%s", e)
@@ -189,7 +190,7 @@ AIS140Parse:
 				// Adds true or false (Json booleans)
 				jsonBuffer.WriteString(fmt.Sprintf(`,"ign":%v`, g.StatusIgnition))
 			}
-			// Ignition Alert packet ($2)
+		// Ignition Alert packet ($2)
 		case "$2":
 			if ignition, err := strconv.ParseBool(fields[9]); err != nil {
 				if DEBUGGING {
@@ -204,7 +205,7 @@ AIS140Parse:
 					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Ignition off"))
 				}
 			}
-			// Main Battery Alert packet ($3)
+		// Main Battery Alert packet ($3)
 		case "$3":
 			if batConnected, err := strconv.ParseBool(fields[9]); err != nil {
 				if DEBUGGING {
@@ -219,16 +220,16 @@ AIS140Parse:
 					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Battery disconnected"))
 				}
 			}
-			// Low Battery Alert packet ($4)
+		// Low Battery Alert packet ($4)
 		case "$4":
 			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Battery low"))
-			// Harsh Acceleration Alert packet ($5)
+		// Harsh Acceleration Alert packet ($5)
 		case "$5":
 			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Harsh Acceleration"))
-			// Harsh Braking Alert packet ($6)
+		// Harsh Braking Alert packet ($6)
 		case "$6":
 			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Harsh Braking"))
-			// Overspeeding Alert packet ($7)
+		// Overspeeding Alert packet ($7)
 		case "$7":
 			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "OverSpeeding Alert"))
 			if speed, err := strconv.ParseInt(fields[9], 10, 64); err != nil {
@@ -242,7 +243,7 @@ AIS140Parse:
 				// Add the parsed Speed to the json
 				jsonBuffer.WriteString(fmt.Sprintf(`,"speed":%d`, g.Speed))
 			}
-			// Box Alert packet ($8)
+		// Box Alert packet ($8)
 		case "$8":
 			if boxOpen, err := strconv.ParseBool(fields[9]); err != nil {
 				if DEBUGGING {
@@ -257,32 +258,87 @@ AIS140Parse:
 					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Box Closed"))
 				}
 			}
-			// SOS Alert packet ($9)
+		// SOS Alert packet ($9)
 		case "$9":
 			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "SOS"))
 		}
 
 		jsonBuffer.WriteString(`}}]}`)
 		jsonString := jsonBuffer.String()
-
+		c <- &jsonString
 		// c <- g
 		if DEBUGGING {
 			log.Printf("Parsed dumped")
 		}
-
-		return jsonString
 	}
-	// if len(fields) == 1 {
-	// 	return fmt.Errorf("Not a CSV message: %s", message)
-	// }
+}
 
-	// if len(fields) != 13 {
-	// 	return nil, fmt.Errorf("Incorrect number of fields in CSV: %d", len(fields))
-	// }
-	// g.Uniqid = fields[1]
+func WTDParse(raw *string, c chan *string) {
+	if *raw == "*ZJ#" {
+		if DEBUGGING {
+			log.Printf("Empty message")
+		}
+		return
+	}
 
-	// // Thingsboard expects time in miilis since epoch
-	// _ = timestamp
+	g := &GPSParsed{}
+	g.Raw = raw
+	g.Protocol = "WTD"
+	fields := strings.Split(*raw, ",")
+	if len(fields) == 1 {
+		if DEBUGGING {
+			log.Printf("Not a CSV message: %s", *raw)
+		}
+		return
+	}
 
-	return ""
+	// For any packet type we have the following fields Uniqid, TimeDate, Lat, Long
+	g.Uniqid = fields[1]
+	Hh_mm_ss_dd_mm_yy := strings.Join([]string{fields[3], fields[11]}, ":")
+	timestamp, e := time.Parse(HHMMSSDDMMYY, Hh_mm_ss_dd_mm_yy)
+	if e != nil {
+		if DEBUGGING {
+			log.Printf("%s", e)
+		}
+		return
+	}
+	// fmt.Println(timestamp)
+	// GPSParser returns in unix seconds, but thingsboard wants it in millis
+	g.TS_Millis = timestamp.Unix() * 1000
+	// 5th field contains latitude as a float
+	if lat, err := strconv.ParseFloat(fields[5], 64); err != nil {
+		if DEBUGGING {
+			log.Printf("Parsing error for latitude %s", fields[5])
+		}
+		return
+	} else {
+		g.ActualLat = float64(lat) / 100
+	}
+	// 6th field contains latitude direction information
+	if fields[6] == "S" {
+		g.ActualLat = -g.ActualLat
+	}
+
+	// 7th field contains longitude as a float
+	if lng, err := strconv.ParseFloat(fields[7], 64); err != nil {
+		if DEBUGGING {
+			log.Printf("Parsing error for longitude %s", fields[7])
+		}
+		return
+	} else {
+		g.ActualLng = float64(lng) / 100
+	}
+	// 8th field contains lngitude direction information
+	if fields[8] == "W" {
+		g.ActualLng = -g.ActualLng
+	}
+
+	// // _ = timestamp
+	var jsonBuffer bytes.Buffer
+	jsonBuffer.WriteString("{") // Start the Json Object
+	// Add whatever we've parsed so far into the JSON Object
+	jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+	jsonBuffer.WriteString(`}}]}`)
+	jsonString := jsonBuffer.String()
+	c <- &jsonString
 }

@@ -19,7 +19,8 @@ func main() {
 
 	go handler(conn)
 
-	fmt.Print("Start talking with the server: ")
+	fmt.Print("[CLIENT] Start talking with the server: ")
+
 	for {
 		// read in input from stdin
 		reader := bufio.NewReader(os.Stdin)
@@ -35,10 +36,10 @@ func handler(conn net.Conn) {
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf)
 		if err != nil {
-			fmt.Println("ERROR: something wrong occured:", err.Error())
+			fmt.Println("[CLIENT] ERROR: something wrong occured:", err.Error())
 			return
 		}
 		n := bytes.Index(buf, []byte{0})
-		fmt.Print("echo: " + string(buf[:n]))
+		fmt.Print("[CLIENT] echo: " + string(buf[:n]))
 	}
 }

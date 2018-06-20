@@ -1,11 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+
+	"github.com/gowtham-munukutla/maps/parsepub"
+	"github.com/pubnub/go/messaging"
 )
 
 const (
@@ -20,6 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer ln.Close()
 	go signalHandler()
 
@@ -48,16 +53,38 @@ func removeClient(conn net.Conn) {
 }
 
 func handler(conn net.Conn) {
+
+	successChannel := make(chan []byte, 0)
+	errorChannel := make(chan []byte, 0)
+
 	defer removeClient(conn)
 	errorChan := make(chan error)
 	dataChan := make(chan []byte)
 
 	go readWrapper(conn, dataChan, errorChan)
 
+	Pubnub := messaging.NewPubnub(
+		pubkey,
+		subkey,
+		"",
+		"",
+		false,
+		"",
+		nil)
+
 	for {
 		select {
 		case data := <-dataChan:
 			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), string(data))
+
+			jsonString := parsepub.Parse(string(data))
+			jsonObj, _ := json.Marshal(jsonString)
+
+			Pubnub.Publish(
+				"exp-channel",
+				string(jsonObj),
+				successChannel,
+				errorChannel)
 
 			// for i := range clients {
 			// 	clients[i].Write(data)
@@ -94,3 +121,8 @@ func signalHandler() {
 		}
 	}()
 }
+
+const (
+	pubkey = "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a"
+	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
+)

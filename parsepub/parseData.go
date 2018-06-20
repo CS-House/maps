@@ -12,7 +12,7 @@ import (
 
 // Currently supports AIS140
 type GPSParsed struct {
-	Raw            *string // Just a copy of the raw data that was parsed
+	Raw            string  // Just a copy of the raw data that was parsed
 	Protocol       string  // Which protocol this message was parsed as
 	PacketType     string  // Type of packet (Status? Alert? OverSpeed?)
 	Uniqid         string  // Unique identifier (Used as device ID)
@@ -31,6 +31,21 @@ type GPSParsed struct {
 	Voltage        float64 // Analog voltage
 }
 
+// type ExportPacket struct {
+// 	DeviceID  string `json:"DeviceID"`
+// 	TimeStamp string `json:"TimeStamp`
+// 	Values    []Values
+// }
+
+// type Values struct {
+// 	Latitude  string `json:"Latitude"`
+// 	Longitude string `json:"Longitude"`
+// 	Speed     string `json:"Speed"`
+// 	Box       string `json:"Box"`
+// 	Battery   string `json:"Battery"`
+// 	Ignition  string `json:"Ignition"`
+// }
+
 /*
 Constants ...
 */
@@ -41,36 +56,31 @@ const (
 )
 
 func main() {
-	input := "GTPL $1,867322035135813,A,290518,062804,18.709738,N,80.068397,E,0,406,309,11,0,14,1,0,26.4470#"
 
-	//input2 := "*ZJ,2030295125,V1,073614,A,3127.7080,N,7701.8360,E,0.00,0.00,040618,00000000#"
+	input2 := "GTPL $9,867322035135813,A,290518,062804,18.709738,S,80.068397,W,0#"
 
-	o1 := Parse(&input)
+	o1 := Parse(input2)
 	fmt.Println(o1)
 
 	jsonobj, _ := json.Marshal(o1)
 
-	fmt.Println(jsonobj)
-
-	fmt.Println(string(jsonobj[70:79]))
-	fmt.Println(string(jsonobj[94:103]))
-
+	fmt.Println(string(jsonobj))
 }
 
 // Parse function takes in a raw string and puts its GPS data in the channel
 // Silently fails if it cannot parse
-func Parse(raw *string) string {
-	if *raw == "" {
+func Parse(raw string) string {
+	if raw == "" {
 		if DEBUGGING {
 			log.Printf("Empty message received")
 		}
 		return "Empty message received"
 	}
 
-	if strings.HasPrefix(*raw, "GTPL") {
+	if strings.HasPrefix(raw, "GTPL") {
 		ais := AIS140Parse(raw)
 		return ais
-	} else if strings.HasPrefix(*raw, "*ZJ") {
+	} else if strings.HasPrefix(raw, "*ZJ") {
 		zt := WTDParse(raw)
 		return zt
 	} else {
@@ -79,19 +89,18 @@ func Parse(raw *string) string {
 		}
 		return "Invalid or unsupported protocol"
 	}
-	return ""
 }
 
 /*
 Parsing AIS140 Device Data ...
 */
-func AIS140Parse(raw *string) string {
+func AIS140Parse(raw string) string {
 	g := &GPSParsed{}
 	g.Raw = raw
 	g.Protocol = "AIS140"
 
 	// This format can have multiple messages delimited by #
-	messages := strings.Split(*raw, "#")
+	messages := strings.Split(raw, "#")
 
 	for _, message := range messages {
 		fields := strings.Split(message, ",")
@@ -119,6 +128,7 @@ func AIS140Parse(raw *string) string {
 
 		// For any packet type we have the following fields Uniqid, TimeDate, Lat, Long
 		g.Uniqid = fields[1]
+
 		Dd_mm_yy_hh_mm_ss := strings.Join([]string{fields[3], fields[4]}, ":")
 		timestamp, e := time.Parse(DDMMYYHHMMSS, Dd_mm_yy_hh_mm_ss)
 		if e != nil {
@@ -128,6 +138,8 @@ func AIS140Parse(raw *string) string {
 		}
 		// GPSParser returns in unix seconds, but thingsboard wants it in millis
 		g.TS_Millis = timestamp.Unix() * 1000
+
+		//export time stamp to the export packet
 
 		// 5th field contains latitude as a float
 		if lat, err := strconv.ParseFloat(fields[5], 64); err != nil {
@@ -143,6 +155,8 @@ func AIS140Parse(raw *string) string {
 			g.ActualLat = -g.ActualLat
 		}
 
+		//now put it in &Values{} and later put the whole thing into exportPacket all at once.
+
 		// 7th field contains longitude as a float
 		if lng, err := strconv.ParseFloat(fields[7], 64); err != nil {
 			if DEBUGGING {
@@ -157,11 +171,15 @@ func AIS140Parse(raw *string) string {
 			g.ActualLng = -g.ActualLng
 		}
 
+		//export longitude into values
+
 		var jsonBuffer bytes.Buffer
 		jsonBuffer.WriteString("{") // Start the Json Object
 		// Add whatever we've parsed so far into the JSON Object
-		jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+		//jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 		//Note that no comma has been inserted at the end
+
+		jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
 		// Now each packetType has its own specific parameters and syntax
 		switch g.PacketType {
@@ -176,7 +194,7 @@ func AIS140Parse(raw *string) string {
 				g.Speed = int(speed)
 
 				// Add the parsed Speed to the json
-				jsonBuffer.WriteString(fmt.Sprintf(`,"speed":%d`, g.Speed))
+				jsonBuffer.WriteString(fmt.Sprintf(`,"Speed":%d`, g.Speed))
 			}
 
 			if boxOpen, err := strconv.ParseBool(fields[13]); err != nil {
@@ -189,7 +207,7 @@ func AIS140Parse(raw *string) string {
 
 				// Add the box Status to json
 				// Adds true or false (Json booleans)
-				jsonBuffer.WriteString(fmt.Sprintf(`,"box":%v`, g.StatusBox))
+				jsonBuffer.WriteString(fmt.Sprintf(`,"Box":%v`, g.StatusBox))
 			}
 
 			if batConnected, err := strconv.ParseBool(fields[15]); err != nil {
@@ -202,7 +220,7 @@ func AIS140Parse(raw *string) string {
 
 				// Add the battery Status to json
 				// Adds true or false (Json booleans)
-				jsonBuffer.WriteString(fmt.Sprintf(`,"bat":%v`, g.StatusBattery))
+				jsonBuffer.WriteString(fmt.Sprintf(`,"Battery":%v`, g.StatusBattery))
 			}
 
 			if ignition, err := strconv.ParseBool(fields[16]); err != nil {
@@ -215,7 +233,7 @@ func AIS140Parse(raw *string) string {
 
 				// Add the ignition Status to json
 				// Adds true or false (Json booleans)
-				jsonBuffer.WriteString(fmt.Sprintf(`,"ign":%v`, g.StatusIgnition))
+				jsonBuffer.WriteString(fmt.Sprintf(`,"Ignition":%v`, g.StatusIgnition))
 			}
 		// Ignition Alert packet ($2)
 		case "$2":
@@ -266,9 +284,8 @@ func AIS140Parse(raw *string) string {
 				continue
 			} else {
 				g.Speed = int(speed)
-
 				// Add the parsed Speed to the json
-				jsonBuffer.WriteString(fmt.Sprintf(`,"speed":%d`, g.Speed))
+				jsonBuffer.WriteString(fmt.Sprintf(`,"Speed":%d`, g.Speed))
 			}
 		// Box Alert packet ($8)
 		case "$8":
@@ -279,6 +296,7 @@ func AIS140Parse(raw *string) string {
 				continue
 			} else {
 				g.StatusBattery = boxOpen
+
 				if boxOpen {
 					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Box Opened"))
 				} else {
@@ -290,7 +308,7 @@ func AIS140Parse(raw *string) string {
 			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "SOS"))
 		}
 
-		jsonBuffer.WriteString(`}}]}`)
+		jsonBuffer.WriteString(`}]}`)
 		jsonString := jsonBuffer.String()
 		//c <- &jsonString
 		// c <- g
@@ -306,8 +324,8 @@ func AIS140Parse(raw *string) string {
 /*
 Parsing a different format of device ...
 */
-func WTDParse(raw *string) string {
-	if *raw == "*ZJ#" {
+func WTDParse(raw string) string {
+	if raw == "*ZJ#" {
 		if DEBUGGING {
 			log.Printf("Empty message")
 		}
@@ -317,10 +335,10 @@ func WTDParse(raw *string) string {
 	g := &GPSParsed{}
 	g.Raw = raw
 	g.Protocol = "WTD"
-	fields := strings.Split(*raw, ",")
+	fields := strings.Split(raw, ",")
 	if len(fields) == 1 {
 		if DEBUGGING {
-			log.Printf("Not a CSV message: %s", *raw)
+			log.Printf("Not a CSV message: %s", raw)
 		}
 		return "Not a CSV message"
 	}
@@ -371,8 +389,27 @@ func WTDParse(raw *string) string {
 	jsonBuffer.WriteString("{") // Start the Json Object
 	// Add whatever we've parsed so far into the JSON Object
 	jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
-	jsonBuffer.WriteString(`}}]}`)
+
+	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+
+	jsonBuffer.WriteString(`}]}`)
+
 	jsonString := jsonBuffer.String()
 
 	return jsonString
 }
+
+// {
+// 	"DeviceID":"867322035135813",
+// 	"TimeStamp":1527575284000,
+// 	"values": [
+// 		{
+// 			"Latitude":18.709738,
+// 			"Longitude":80.068397,
+// 			"Speed":0,
+// 			"Box":false,
+// 			"Bat":true,
+// 			"Ign":false
+// 		}
+// 	]
+// }

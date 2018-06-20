@@ -179,7 +179,7 @@ func AIS140Parse(raw string) string {
 		//jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 		//Note that no comma has been inserted at the end
 
-		jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+		jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
 		// Now each packetType has its own specific parameters and syntax
 		switch g.PacketType {

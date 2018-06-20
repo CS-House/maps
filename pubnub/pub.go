@@ -25,7 +25,6 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	p := &Packet{}
-
 	p.GetRandomLatAndLong(10, 50)
 
 	json, _ := json.Marshal(p)

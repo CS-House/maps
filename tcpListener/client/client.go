@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"math/rand"
 	"net"
-	"strconv"
+	"os"
 )
 
 const (
@@ -22,14 +22,11 @@ func main() {
 
 	for {
 		// read in input from stdin
-		p := &Packet{}
-		p.GetRandomLatAndLong(10, 100)
 
-		//reader := bufio.NewReader(os.Stdin)
-		//text, _ := reader.ReadString('\n')
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
 		// send to socket
-		fmt.Fprintf(conn, "%s %s", p.Latitude, p.Longitude)
-
+		fmt.Fprintf(conn, text)
 	}
 }
 
@@ -47,16 +44,16 @@ func handler(conn net.Conn) {
 	}
 }
 
-type Packet struct {
-	Latitude  string `json:"Latitude"`
-	Longitude string `json:"Longitude"`
-}
+// type Packet struct {
+// 	Latitude  string `json:"Latitude"`
+// 	Longitude string `json:"Longitude"`
+// }
 
-func (p *Packet) GetRandomLatAndLong(min, max float64) {
-	p.Latitude = floatToString(min + rand.Float64()*(max-min))
-	p.Longitude = floatToString(min + rand.Float64()*(max-min))
-}
+// func (p *Packet) GetRandomLatAndLong(min, max float64) {
+// 	p.Latitude = floatToString(min + rand.Float64()*(max-min))
+// 	p.Longitude = floatToString(min + rand.Float64()*(max-min))
+// }
 
-func floatToString(input float64) string {
-	return strconv.FormatFloat(input, 'f', 2, 64)
-}
+// func floatToString(input float64) string {
+// 	return strconv.FormatFloat(input, 'f', 2, 64)
+// }

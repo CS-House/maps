@@ -8,9 +8,10 @@ var pn = new PubNub({
 
 pn.addListener({
     message: function (m) {
-        // handle message
-        //console.log(JSON.parse(m.message)["Latitude"]);
-        console.log(JSON.parse(m.message)["DeviceID"]);   
+        var message = "'" + m.message + "'"
+        console.log(message)
+        var str = JSON.parse(m.message)
+        console.log(str["DeviceID"]);   
     }
 });
 

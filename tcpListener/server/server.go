@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -77,14 +76,22 @@ func handler(conn net.Conn) {
 		case data := <-dataChan:
 			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), string(data))
 
-			jsonString := parsepub.Parse(string(data))
-			jsonObj, _ := json.Marshal(jsonString)
+			jsonObj := parsepub.Parse(string(data))
 
 			go Pubnub.Publish(
 				"exp-channel",
-				string(jsonObj),
+				jsonObj,
 				successChannel,
 				errorChannel)
+
+			select {
+			case response := <-successChannel:
+				fmt.Println(string(response))
+			case err := <-errorChannel:
+				fmt.Println(string(err))
+			case <-messaging.Timeout():
+				fmt.Println("Publish() timeout")
+			}
 
 			// for i := range clients {
 			// 	clients[i].Write(data)

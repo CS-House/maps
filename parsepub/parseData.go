@@ -174,7 +174,7 @@ func AIS140Parse(raw string) string {
 		//export longitude into values
 
 		var jsonBuffer bytes.Buffer
-		jsonBuffer.WriteString("{") // Start the Json Object
+		jsonBuffer.WriteString(`{`) // Start the Json Object
 		// Add whatever we've parsed so far into the JSON Object
 		//jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 		//Note that no comma has been inserted at the end
@@ -388,9 +388,9 @@ func WTDParse(raw string) string {
 	var jsonBuffer bytes.Buffer
 	jsonBuffer.WriteString("{") // Start the Json Object
 	// Add whatever we've parsed so far into the JSON Object
-	jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+	jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"TimeStamp":%d,"Values":{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
-	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
 	jsonBuffer.WriteString(`}]}`)
 

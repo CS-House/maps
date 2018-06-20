@@ -80,7 +80,7 @@ func handler(conn net.Conn) {
 			jsonString := parsepub.Parse(string(data))
 			jsonObj, _ := json.Marshal(jsonString)
 
-			Pubnub.Publish(
+			go Pubnub.Publish(
 				"exp-channel",
 				string(jsonObj),
 				successChannel,

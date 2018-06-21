@@ -2,66 +2,82 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"strconv"
-	"time"
 
-	"github.com/pubnub/go/messaging"
+	"github.com/Jeffail/gabs"
 )
+
+// type Export struct {
+// 	DeviceID  string `json:"DeviceID"`
+// 	TimeStamp string `json:"TimeStamp"`
+// 	Values    []Values
+// }
+
+// type Values struct {
+// 	Latitude  string `json:"Latitude"`
+// 	Longitude string `json:"Longitude"`
+// 	Speed     string `json:"Speed"`
+// 	Box       string `json:"Box"`
+// 	Battery   string `json:"Battery"`
+// 	Ignition  string `json:"Ignition"`
+// }
 
 func main() {
 
-	input := `{"DeviceID":"867322035135813","TimeStamp":1527575284000,"values":[{"Latitude":-18.709738,"Longitude":-80.068397,"alert":"SOS"}]}`
-	// input2 := "*ZJ,2030295125,V1,073614,A,3127.7080,N,7701.8360,E,0.00,0.00,040618,00000000#"
+	input := `{"DeviceID":"867322035135813","TimeStamp":1527575284000,"Values":[{"Latitude":18.709738,"Longitude":80.068397,"Speed":0,"Box":false,"Battery":true,"Ignition":false}]}`
 
-	rand.Seed(time.Now().UnixNano())
+	jsonParsed, _ := gabs.ParseJSON([]byte(input))
 
-	pubnub := messaging.NewPubnub(
-		pubkey,
-		subkey,
-		"",
-		"",
-		false,
-		"",
-		nil)
+	children := jsonParsed.Path("Values").Index(0)
 
-	successChannel := make(chan []byte, 0)
-	errorChannel := make(chan []byte, 0)
+	fmt.Println(children)
+	// rand.Seed(time.Now().UnixNano())
+
+	// pubnub := messaging.NewPubnub(
+	// 	pubkey,
+	// 	subkey,
+	// 	"",
+	// 	"",
+	// 	false,
+	// 	"",
+	// 	nil)
+
+	// successChannel := make(chan []byte, 0)
+	// errorChannel := make(chan []byte, 0)
 
 	//message := "hello world from go publisher"
 
-	for {
+	// for {
 
-		// json, _ := json.Marshal()
-		// fmt.Println(string(json))
+	// 	// json, _ := json.Marshal()
+	// 	// fmt.Println(string(json))
 
-		pubnub.Publish(
-			"exp-channel",
-			input,
-			successChannel,
-			errorChannel)
+	// 	pubnub.Publish(
+	// 		"exp-channel",
+	// 		input,
+	// 		successChannel,
+	// 		errorChannel)
 
-		select {
-		case response := <-successChannel:
-			fmt.Println(string(response))
-		case err := <-errorChannel:
-			fmt.Println(string(err))
-		case <-messaging.Timeout():
-			fmt.Println("Publish() timeout")
-		}
+	// 	select {
+	// 	case response := <-successChannel:
+	// 		fmt.Println(string(response))
+	// 	case err := <-errorChannel:
+	// 		fmt.Println(string(err))
+	// 	case <-messaging.Timeout():
+	// 		fmt.Println("Publish() timeout")
+	// 	}
 
-		time.Sleep(2 * time.Second)
-	}
+	// 	time.Sleep(2 * time.Second)
+	// }
 }
 
-func floatToString(input float64) string {
-	return strconv.FormatFloat(input, 'f', 2, 64)
-}
+// func floatToString(input float64) string {
+// 	return strconv.FormatFloat(input, 'f', 2, 64)
+// }
 
-const (
-	pubkey = "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a"
-	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
-)
+// const (
+// 	pubkey = "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a"
+// 	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
+// )
 
 // type Packet struct {
 // 	Latitude  string `json:"Latitude"`

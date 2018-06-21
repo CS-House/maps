@@ -245,9 +245,9 @@ func AIS140Parse(raw string) string {
 			} else {
 				g.StatusIgnition = ignition
 				if ignition {
-					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Ignition on"))
+					jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Ignition on"))
 				} else {
-					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Ignition off"))
+					jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Ignition off"))
 				}
 			}
 		// Main Battery Alert packet ($3)
@@ -260,23 +260,23 @@ func AIS140Parse(raw string) string {
 			} else {
 				g.StatusBattery = batConnected
 				if batConnected {
-					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Battery connected"))
+					jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Battery connected"))
 				} else {
-					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Battery disconnected"))
+					jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Battery disconnected"))
 				}
 			}
 		// Low Battery Alert packet ($4)
 		case "$4":
-			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Battery low"))
+			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Battery low"))
 		// Harsh Acceleration Alert packet ($5)
 		case "$5":
-			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Harsh Acceleration"))
+			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Harsh Acceleration"))
 		// Harsh Braking Alert packet ($6)
 		case "$6":
-			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Harsh Braking"))
+			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Harsh Braking"))
 		// Overspeeding Alert packet ($7)
 		case "$7":
-			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "OverSpeeding Alert"))
+			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "OverSpeeding Alert"))
 			if speed, err := strconv.ParseInt(fields[9], 10, 64); err != nil {
 				if DEBUGGING {
 					log.Printf("Parsing error for speed %s", fields[9])
@@ -298,14 +298,14 @@ func AIS140Parse(raw string) string {
 				g.StatusBattery = boxOpen
 
 				if boxOpen {
-					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Box Opened"))
+					jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Box Opened"))
 				} else {
-					jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "Box Closed"))
+					jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "Box Closed"))
 				}
 			}
 		// SOS Alert packet ($9)
 		case "$9":
-			jsonBuffer.WriteString(fmt.Sprintf(`,"alert":"%s"`, "SOS"))
+			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "SOS"))
 		}
 
 		jsonBuffer.WriteString(`}]}`)

@@ -40,7 +40,7 @@ func handler(conn net.Conn) {
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf)
 		if err != nil {
-			fmt.Println("[CLIENT] ERROR: something wrong occured:", err.Error())
+			fmt.Println("[CLIENT] ERROR: Maybe the server went offline: Please check : ", err.Error())
 			return
 		}
 		// n := bytes.Index(buf, []byte{0})
@@ -60,17 +60,3 @@ func signalHandler() {
 		}
 	}()
 }
-
-// type Packet struct {
-// 	Latitude  string `json:"Latitude"`
-// 	Longitude string `json:"Longitude"`
-// }
-
-// func (p *Packet) GetRandomLatAndLong(min, max float64) {
-// 	p.Latitude = floatToString(min + rand.Float64()*(max-min))
-// 	p.Longitude = floatToString(min + rand.Float64()*(max-min))
-// }
-
-// func floatToString(input float64) string {
-// 	return strconv.FormatFloat(input, 'f', 2, 64)
-// }

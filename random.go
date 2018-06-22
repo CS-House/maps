@@ -127,7 +127,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/Jeffail/gabs"
 )
@@ -136,8 +139,37 @@ func main() {
 	input := `{"DeviceID":"867322035135813","TimeStamp":"1527575284000","Latitude":"18.709738","Longitude":"80.068397","Speed":0,"Box":false,"Battery":true,"Ignition":false}`
 	jsonparser, _ := gabs.ParseJSON([]byte(input))
 
+	fmt.Println("josnparser is ", jsonparser)
+
+	var value1 string
+	value1 = jsonparser.Path("Latitude").Data().(string)
+
+	fmt.Println("value1 is", value1)
+
+	file, err := os.Open("data.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	//for scanner.Scan() {
+	//fmt.Println(scanner.Text())
+	msg := `{"DeviceID":"lgTeMaPEZQ","TimeStamp":"1527575284000","Latitude":"36.62","Longitude":"46.15","Speed":"srgver","Box":"vdfv","Battery":"sdve","Ignition":"dfdf"}`
+	fmt.Println("msg is ", msg)
+
+	jsonparser1, _ := gabs.ParseJSON([]byte(msg))
+	fmt.Println("jsonparser1 is ", jsonparser1)
 	var value string
-	value = jsonparser.Path("Latitude").Data().(string)
+
+	value = jsonparser1.Path("TimeStamp").Data().(string)
 
 	fmt.Println(value)
+	//time.Sleep(2 * time.Second)
+	//}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
 }

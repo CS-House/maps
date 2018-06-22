@@ -1,4 +1,4 @@
-package main
+package parsepub
 
 import (
 	"bytes"
@@ -307,7 +307,7 @@ func AIS140Parse(raw string) string {
 			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "SOS"))
 		}
 
-		jsonBuffer.WriteString(`}}`)
+		jsonBuffer.WriteString(`}`)
 		jsonString := jsonBuffer.String()
 		//c <- &jsonString
 		// c <- g
@@ -391,7 +391,7 @@ func WTDParse(raw string) string {
 
 	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
-	jsonBuffer.WriteString(`}}`)
+	jsonBuffer.WriteString(`}`)
 
 	jsonString := jsonBuffer.String()
 

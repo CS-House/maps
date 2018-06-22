@@ -10,9 +10,10 @@ pn.addListener({
     message: function (m) {
         var message = "'" + m.message + "'"
         var str = JSON.parse(m.message)
-        var lat = str["Values"][0]["Latitude"]
-        var long = str["Values"][0]["Longitude"]
-        console.log("[" + str["DeviceID"] + "]" + " [LatLng : " + lat + ", " + long + "]");  
+        //console.log(str)
+        var lat = str["DeviceID"]
+        // var long = str["Values"][0]["Longitude"]
+        console.log(lat)
     }
 });
 

@@ -3,10 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/signal"
+
+	"github.com/gowtham-munukutla/maps/logger"
 )
 
 const (
@@ -20,7 +21,7 @@ func main() {
 
 	go handler(conn)
 
-	fmt.Print("[CLIENT] Start talking with the server: ")
+	logger.Lc.Print("[CLIENT] Start talking with the server: ")
 
 	go signalHandler()
 
@@ -46,7 +47,7 @@ func handler(conn net.Conn) {
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf)
 		if err != nil {
-			fmt.Println("[CLIENT] ERROR: Maybe the server went offline: Please check : ", err.Error())
+			logger.Lc.Println("[CLIENT] ERROR: Maybe the server went offline: Please check : ", err.Error())
 			return
 		}
 		// n := bytes.Index(buf, []byte{0})
@@ -59,27 +60,10 @@ func signalHandler() {
 	signal.Notify(sigchan, os.Interrupt)
 	go func() {
 		for sig := range sigchan {
-			log.Printf("[CLIENT] Disconnecting: %s", sig)
-			fmt.Println("Done.")
+			logger.Lc.Printf("[CLIENT] Disconnecting: %s", sig)
+			logger.Lc.Println("Done.")
 			// Exit cleanly
 			os.Exit(0)
 		}
 	}()
 }
-
-// func readLine(path string, message chan<- string) {
-// 	inFile, _ := os.Open(path)
-// 	defer inFile.Close()
-// 	scanner := bufio.NewScanner(inFile)
-// 	scanner.Split(bufio.ScanLines)
-
-// 	for scanner.Scan() {
-// 		fmt.Println(scanner.Text())
-// 		message <- scanner.Text()
-// 		time.Sleep(3 * time.Second)
-// 	}
-// }
-
-// func receive(ch <-chan string) string {
-// 	return <-ch
-// }

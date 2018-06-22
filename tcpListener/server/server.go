@@ -3,13 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/signal"
 
 	"github.com/buger/jsonparser"
 	_ "github.com/go-sql-driver/mysql"
+	logger "github.com/gowtham-munukutla/maps/logger"
 	"github.com/gowtham-munukutla/maps/parsepub"
 	"github.com/pubnub/go/messaging"
 )
@@ -26,22 +26,22 @@ var count = 0
 func main() {
 	ln, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		log.Fatal(err)
+		logger.Ls.Fatal(err)
 	}
 
 	defer ln.Close()
 	go signalHandler()
 
-	log.Print("[SERVER] listening...")
+	logger.Ls.Print("[SERVER] listening...")
 
 	for {
 		conn, err := ln.Accept()
 		count++
 		if err != nil {
-			log.Print(err)
+			logger.Ls.Print(err)
 		}
 
-		log.Printf("[SERVER] Client connected %s -> %s -- Number of clients connected (%d)\n", conn.RemoteAddr(), conn.LocalAddr(), count)
+		logger.Ls.Printf("[SERVER] Client connected %s -> %s -- Number of clients connected (%d)\n", conn.RemoteAddr(), conn.LocalAddr(), count)
 		// Add the client to the connection array
 		clients = append(clients, conn)
 
@@ -50,7 +50,7 @@ func main() {
 }
 
 func removeClient(conn net.Conn) {
-	log.Printf("[SERVER] Client %s disconnected", conn.RemoteAddr())
+	logger.Ls.Printf("[SERVER] Client %s disconnected", conn.RemoteAddr())
 	count--
 	conn.Close()
 	//remove client from clients here
@@ -85,7 +85,7 @@ func handler(conn net.Conn) {
 
 			jsonObj := parsepub.Parse(string(data))
 
-			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
+			logger.Ls.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
 
 			insertDB([]byte(jsonObj), db)
 
@@ -108,7 +108,7 @@ func handler(conn net.Conn) {
 			// 	clients[i].Write(data)
 			// }
 		case err := <-errorChan:
-			log.Println("[SERVER] An error occured:", err.Error())
+			logger.Ls.Println("[SERVER] An error occured:", err.Error())
 			return
 		}
 	}
@@ -131,8 +131,8 @@ func signalHandler() {
 	signal.Notify(sigchan, os.Interrupt)
 	go func() {
 		for sig := range sigchan {
-			log.Printf("[SERVER] Closing due to Signal: %s", sig)
-			log.Printf("[SERVER] Graceful shutdown")
+			logger.Ls.Printf("[SERVER] Closing due to Signal: %s", sig)
+			logger.Ls.Printf("[SERVER] Graceful shutdown")
 			fmt.Println("Done.")
 			// Exit cleanly
 			os.Exit(0)

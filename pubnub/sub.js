@@ -11,9 +11,12 @@ pn.addListener({
         var message = "'" + m.message + "'"
         var str = JSON.parse(m.message)
         //console.log(str)
-        var lat = str["DeviceID"]
+        var did = str["DeviceID"]
+        var lat = str["Latitude"]
+        var long = str["Longitude"]
+
         // var long = str["Values"][0]["Longitude"]
-        console.log(lat)
+        console.log(did, lat, long)
     }
 });
 

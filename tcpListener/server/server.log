@@ -1,0 +1,5 @@
+2018/06/22 15:29:54 server.go:35: [SERVER] listening...
+2018/06/22 15:30:03 server.go:44: [SERVER] Client connected [::1]:55340 -> [::1]:8000 -- Number of clients connected (1)
+2018/06/22 15:30:22 server.go:88: [SERVER] Client [::1]:55340 sent: {"DeviceID":"867322035135813","TimeStamp":"1527575284000","Latitude":"18.709738","Longitude":"80.068397","Speed":0,"Box":false,"Battery":true,"Ignition":false}
+2018/06/22 15:32:10 server.go:88: [SERVER] Client [::1]:55340 sent: {"DeviceID":"867322035135813","TimeStamp":"1527575284000","Latitude":"18.709738","Longitude":"80.068397","Speed":0,"Box":false,"Battery":true,"Ignition":false}
+2018/06/22 15:32:10 server.go:53: [SERVER] Client [::1]:55340 disconnected

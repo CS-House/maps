@@ -23,4 +23,4 @@ func insert(object []byte) {
 	fmt.Println(string(DeviceID), string(TimeStamp), string(Latitude), string(Longitude), string(Battery), string(Ignition))
 }
 
-//GTPL $2,867322035135825,A,290517,062804,18.709738,S,80.068397,W,0#
+//GTPL $2,867622465135889,A,280516,062804,18.709738,S,80.068397,W,0#

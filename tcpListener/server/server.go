@@ -1,12 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 
+	"github.com/buger/jsonparser"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gowtham-munukutla/maps/parsepub"
 	"github.com/pubnub/go/messaging"
 )
@@ -14,6 +17,8 @@ import (
 const (
 	port = "8000"
 )
+
+var db *sql.DB
 
 var clients []net.Conn
 var count = 0
@@ -71,6 +76,9 @@ func handler(conn net.Conn) {
 		"",
 		nil)
 
+	db, err := sql.Open("mysql", "root:clear@/latlong")
+	check(err)
+
 	for {
 		select {
 		case data := <-dataChan:
@@ -78,6 +86,8 @@ func handler(conn net.Conn) {
 			jsonObj := parsepub.Parse(string(data))
 
 			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
+
+			insertDB([]byte(jsonObj), db)
 
 			Pubnub.Publish(
 				"exp-channel",
@@ -134,3 +144,27 @@ const (
 	pubkey = "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a"
 	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
 )
+
+func insertDB(object []byte, db *sql.DB) {
+	DeviceID, _, _, _ := jsonparser.Get(object, "DeviceID")
+	TimeStamp, _, _, _ := jsonparser.Get(object, "TimeStamp")
+	Latitude, _, _, _ := jsonparser.Get(object, "Latitude")
+	Longitude, _, _, _ := jsonparser.Get(object, "Longitude")
+	Battery, _, _, _ := jsonparser.Get(object, "Battery")
+	Ignition, _, _, _ := jsonparser.Get(object, "Ignition")
+	Speed, _, _, _ := jsonparser.Get(object, "Speed")
+	Box, _, _, _ := jsonparser.Get(object, "Box")
+	Alert, _, _, _ := jsonparser.Get(object, "Alert")
+
+	_, err := db.Exec("Insert into GPSdata Values(?,?,?,?,?,?,?,?, ?)",
+		string(DeviceID), string(TimeStamp), string(Latitude), string(Longitude), string(Speed), string(Box), string(Battery), string(Ignition), string(Alert))
+
+	check(err)
+
+}
+
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

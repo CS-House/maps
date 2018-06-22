@@ -7,7 +7,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"time"
 )
 
 const (
@@ -68,19 +67,19 @@ func signalHandler() {
 	}()
 }
 
-func readLine(path string, message chan<- string) {
-	inFile, _ := os.Open(path)
-	defer inFile.Close()
-	scanner := bufio.NewScanner(inFile)
-	scanner.Split(bufio.ScanLines)
+// func readLine(path string, message chan<- string) {
+// 	inFile, _ := os.Open(path)
+// 	defer inFile.Close()
+// 	scanner := bufio.NewScanner(inFile)
+// 	scanner.Split(bufio.ScanLines)
 
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-		message <- scanner.Text()
-		time.Sleep(3 * time.Second)
-	}
-}
+// 	for scanner.Scan() {
+// 		fmt.Println(scanner.Text())
+// 		message <- scanner.Text()
+// 		time.Sleep(3 * time.Second)
+// 	}
+// }
 
-func receive(ch <-chan string) string {
-	return <-ch
-}
+// func receive(ch <-chan string) string {
+// 	return <-ch
+// }

@@ -20,12 +20,6 @@
   version = "v3.16.1"
 
 [[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
-
-[[projects]]
   name = "google.golang.org/appengine"
   packages = ["cloudsql"]
   revision = "b1f26356af11148e710935ed1ac8a7f5702c7612"
@@ -34,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "48e0c031544c248c403ee6f9417840945dcfd63476c16aa5f8af6d5e2faacb76"
+  inputs-digest = "4689001e9b28c54692c975aea6d9247d43b04b1a5c6f41852a0642413e387bf6"
   solver-name = "gps-cdcl"
   solver-version = 1

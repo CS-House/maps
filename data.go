@@ -20,7 +20,7 @@ func main() {
 	// ts := jsonParsed.Path("TimeStamp")
 
 	// fmt.Println(DID, ts)
-	// children := jsonParsed.Path("Values").Index(0)
+	children := jsonParsed.Path("Values").Index(0)
 
 	fmt.Println(children.Path("Latitude"))
 	fmt.Println(children.Path("Longitude"))

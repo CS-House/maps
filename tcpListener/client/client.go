@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"time"
 )
 
 const (
@@ -24,11 +25,17 @@ func main() {
 
 	go signalHandler()
 
+	// go readLine(conn)
 	for {
-		// read in input from stdin
-
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
+
+		// messagechannel := make(chan string, 500)
+		// readLine("../../data.txt", messagechannel)
+
+		// msg := receive(messagechannel)
+		// fmt.Println(msg)
+
 		// send to socket
 		fmt.Fprintf(conn, text)
 	}
@@ -59,4 +66,21 @@ func signalHandler() {
 			os.Exit(0)
 		}
 	}()
+}
+
+func readLine(path string, message chan<- string) {
+	inFile, _ := os.Open(path)
+	defer inFile.Close()
+	scanner := bufio.NewScanner(inFile)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+		message <- scanner.Text()
+		time.Sleep(3 * time.Second)
+	}
+}
+
+func receive(ch <-chan string) string {
+	return <-ch
 }

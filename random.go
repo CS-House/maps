@@ -100,7 +100,7 @@ import (
 
 func main() {
 
-	messagechannel := make(chan string, 10)
+	messagechannel := make(chan string, 500)
 	readLine("data.txt", messagechannel)
 
 	msg := receive(messagechannel)

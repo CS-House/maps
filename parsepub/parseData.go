@@ -60,7 +60,6 @@ func main() {
 	input2 := "GTPL $9,867322035135813,A,290518,062804,18.709738,S,80.068397,W,0#"
 
 	o1 := Parse(input2)
-	fmt.Println(o1)
 
 	jsonobj, _ := json.Marshal(o1)
 
@@ -179,7 +178,7 @@ func AIS140Parse(raw string) string {
 		//jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"ts":%d,"values":{"latitude":%f,"longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 		//Note that no comma has been inserted at the end
 
-		jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+		jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
 		// Now each packetType has its own specific parameters and syntax
 		switch g.PacketType {
@@ -308,7 +307,7 @@ func AIS140Parse(raw string) string {
 			jsonBuffer.WriteString(fmt.Sprintf(`,"Alert":"%s"`, "SOS"))
 		}
 
-		jsonBuffer.WriteString(`}]}`)
+		jsonBuffer.WriteString(`}}`)
 		jsonString := jsonBuffer.String()
 		//c <- &jsonString
 		// c <- g
@@ -388,11 +387,11 @@ func WTDParse(raw string) string {
 	var jsonBuffer bytes.Buffer
 	jsonBuffer.WriteString("{") // Start the Json Object
 	// Add whatever we've parsed so far into the JSON Object
-	jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"TimeStamp":%d,"Values":{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+	//jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"TimeStamp":%d,"Values":{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
-	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Values":[{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
-	jsonBuffer.WriteString(`}]}`)
+	jsonBuffer.WriteString(`}}`)
 
 	jsonString := jsonBuffer.String()
 

@@ -10,3 +10,15 @@
 2018/06/25 01:31:37 client.go:25: [CLIENT] Start talking with the server: 
 2018/06/25 01:31:39 client.go:67: [CLIENT] Disconnecting: interrupt
 2018/06/25 01:31:39 client.go:69: Done.
+2018/06/23 14:52:18 client.go:25: [CLIENT] Start talking with the server: 
+2018/06/23 14:52:21 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
+2018/06/23 14:53:06 client.go:67: [CLIENT] Disconnecting: interrupt
+2018/06/23 14:53:06 client.go:69: Done.
+2018/06/23 14:53:06 client.go:25: [CLIENT] Start talking with the server: 
+2018/06/23 14:53:09 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
+2018/06/23 14:54:06 client.go:67: [CLIENT] Disconnecting: interrupt
+2018/06/23 14:54:06 client.go:69: Done.
+2018/06/23 14:54:25 client.go:25: [CLIENT] Start talking with the server: 
+2018/06/23 14:54:31 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
+2018/06/23 14:54:40 client.go:67: [CLIENT] Disconnecting: interrupt
+2018/06/23 14:54:40 client.go:69: Done.

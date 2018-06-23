@@ -89,37 +89,55 @@
 // // 	]
 // // }
 
+// package main
+
+// import (
+// 	"bufio"
+// 	"fmt"
+// 	"os"
+// 	"time"
+// )
+
+// func main() {
+
+// 	messagechannel := make(chan string, 500)
+// 	readLine("data.txt", messagechannel)
+
+// 	msg := receive(messagechannel)
+// 	fmt.Println(msg)
+// }
+
+// func readLine(path string, message chan<- string) {
+// 	inFile, _ := os.Open(path)
+// 	defer inFile.Close()
+// 	scanner := bufio.NewScanner(inFile)
+// 	scanner.Split(bufio.ScanLines)
+
+// 	for scanner.Scan() {
+// 		fmt.Println(scanner.Text())
+// 		message <- scanner.Text()
+// 		time.Sleep(1 * time.Second)
+// 	}
+// }
+
+// func receive(ch <-chan string) string {
+// 	return <-ch
+// }
+
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"time"
+
+	"github.com/Jeffail/gabs"
 )
 
 func main() {
+	input := `{"DeviceID":"867322035135813","TimeStamp":"1527575284000","Latitude":"18.709738","Longitude":"80.068397","Speed":0,"Box":false,"Battery":true,"Ignition":false}`
+	jsonparser, _ := gabs.ParseJSON([]byte(input))
 
-	messagechannel := make(chan string, 500)
-	readLine("data.txt", messagechannel)
+	var value string
+	value = jsonparser.Path("Latitude").Data().(string)
 
-	msg := receive(messagechannel)
-	fmt.Println(msg)
-}
-
-func readLine(path string, message chan<- string) {
-	inFile, _ := os.Open(path)
-	defer inFile.Close()
-	scanner := bufio.NewScanner(inFile)
-	scanner.Split(bufio.ScanLines)
-
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-		message <- scanner.Text()
-		time.Sleep(1 * time.Second)
-	}
-}
-
-func receive(ch <-chan string) string {
-	return <-ch
+	fmt.Println(value)
 }

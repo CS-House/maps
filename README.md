@@ -10,4 +10,6 @@ Get live data from AIS140 and WTD types of devices and show their live tracking 
 
 You would need the Go and Node SDK of Pubnub installed in your machine to test the software.
 
+The client and server communication is added to the log files present in /logs.
+
 Documentation is yet to be completed. Chill.

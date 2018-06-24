@@ -8,6 +8,12 @@
   version = "1.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/buger/jsonparser"
+  packages = ["."]
+  revision = "2cac668e8456b4284edb0715e17e2af02d3ec993"
+
+[[projects]]
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   revision = "d523deb1b23d913de5bdada721a6071e71283618"
@@ -28,6 +34,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4689001e9b28c54692c975aea6d9247d43b04b1a5c6f41852a0642413e387bf6"
+  inputs-digest = "c207c3d7660c54cf861a2f920d42c4906a970a03131994e2902ce2b4b9e0a6b1"
   solver-name = "gps-cdcl"
   solver-version = 1

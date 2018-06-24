@@ -389,7 +389,7 @@ func WTDParse(raw string) string {
 	// Add whatever we've parsed so far into the JSON Object
 	//jsonBuffer.WriteString(fmt.Sprintf(`"%s":[{"TimeStamp":%d,"Values":{"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
-	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":%d,"Latitude":%f,"Longitude":%f`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
+	jsonBuffer.WriteString(fmt.Sprintf(`"DeviceID":"%s","TimeStamp":"%d","Latitude":"%f","Longitude":"%f"`, g.Uniqid, g.TS_Millis, g.ActualLat, g.ActualLng))
 
 	jsonBuffer.WriteString(`}`)
 

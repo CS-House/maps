@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -22,6 +23,7 @@ func main() {
 	go handler(conn)
 
 	logger.Lc.Print("[CLIENT] Start talking with the server: ")
+	log.Println("[CLIENT] Start talking with the server: ")
 
 	go signalHandler()
 
@@ -47,6 +49,7 @@ func handler(conn net.Conn) {
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf)
 		if err != nil {
+			log.Println("[CLIENT] ERROR: Maybe the server went offline: Please check : ")
 			logger.Lc.Println("[CLIENT] ERROR: Maybe the server went offline: Please check : ", err.Error())
 			return
 		}
@@ -60,7 +63,9 @@ func signalHandler() {
 	signal.Notify(sigchan, os.Interrupt)
 	go func() {
 		for sig := range sigchan {
+			log.Printf("[CLIENT] Disconnecting: %s", sig)
 			logger.Lc.Printf("[CLIENT] Disconnecting: %s", sig)
+			log.Println("Done.")
 			logger.Lc.Println("Done.")
 			// Exit cleanly
 			os.Exit(0)

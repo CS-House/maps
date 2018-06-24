@@ -13,10 +13,10 @@ var (
 
 func init() {
 	lspath := os.Getenv("GOPATH")
-	lspath = lspath + "/src/gowtham-munukutla/logs/server.log"
+	lspath = lspath + "/src/github.com/gowtham-munukutla/maps/logs/server.log"
 	flag.Parse()
 
-	file, err := os.Create(lspath)
+	file, err := os.OpenFile(lspath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		panic(err)
 	}

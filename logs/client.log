@@ -22,3 +22,4 @@
 2018/06/23 14:54:31 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
 2018/06/23 14:54:40 client.go:67: [CLIENT] Disconnecting: interrupt
 2018/06/23 14:54:40 client.go:69: Done.
+2018/06/26 19:19:33 client.go:25: [CLIENT] Start talking with the server: 

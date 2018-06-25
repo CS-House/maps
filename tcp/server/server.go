@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"sync"
 
 	"github.com/buger/jsonparser"
 	_ "github.com/go-sql-driver/mysql"
@@ -16,7 +17,7 @@ import (
 )
 
 const (
-	port = "5000"
+	port = "8000"
 )
 
 var db *sql.DB
@@ -93,13 +94,21 @@ func handler(conn net.Conn) {
 			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
 			logger.Ls.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
 
-			insertDB([]byte(jsonObj), db)
+			var wg sync.WaitGroup
+			wg.Add(2)
 
-			Pubnub.Publish(
-				"exp-channel",
-				jsonObj,
-				successChannel,
-				errorChannel)
+			go insertDB([]byte(jsonObj), db, &wg)
+
+			go func(obj string, pnSuccChan chan []byte, pnErrorChan chan []byte, wg *sync.WaitGroup) {
+				defer wg.Done()
+				Pubnub.Publish(
+					"exp-channel",
+					obj,
+					pnSuccChan,
+					pnErrorChan)
+			}(jsonObj, successChannel, errorChannel, &wg)
+
+			wg.Wait()
 
 			select {
 			case response := <-successChannel:
@@ -154,7 +163,10 @@ const (
 	subkey = "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe"
 )
 
-func insertDB(object []byte, db *sql.DB) {
+func insertDB(object []byte, db *sql.DB, wg *sync.WaitGroup) {
+
+	defer wg.Done()
+
 	DeviceID, _, _, _ := jsonparser.Get(object, "DeviceID")
 	TimeStamp, _, _, _ := jsonparser.Get(object, "TimeStamp")
 	Latitude, _, _, _ := jsonparser.Get(object, "Latitude")

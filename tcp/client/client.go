@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	server = "localhost:5000"
+	server = "localhost:8000"
 )
 
 func main() {

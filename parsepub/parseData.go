@@ -394,7 +394,7 @@ func WTDParse(raw string) string {
 	jsonBuffer.WriteString(`}`)
 
 	jsonString := jsonBuffer.String()
-
+	log.Printf(jsonString)
 	return jsonString
 }
 

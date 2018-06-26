@@ -15,7 +15,6 @@ pn.addListener({
         var lat = str["Latitude"]
         var long = str["Longitude"]
 
-        // var long = str["Values"][0]["Longitude"]
         console.log(did, lat, long)
     }
 });

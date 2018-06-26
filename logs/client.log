@@ -10,7 +10,6 @@
 2018/06/25 01:31:37 client.go:25: [CLIENT] Start talking with the server: 
 2018/06/25 01:31:39 client.go:67: [CLIENT] Disconnecting: interrupt
 2018/06/25 01:31:39 client.go:69: Done.
-<<<<<<< HEAD
 2018/06/23 14:52:18 client.go:25: [CLIENT] Start talking with the server: 
 2018/06/23 14:52:21 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
 2018/06/23 14:53:06 client.go:67: [CLIENT] Disconnecting: interrupt
@@ -23,36 +22,4 @@
 2018/06/23 14:54:31 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
 2018/06/23 14:54:40 client.go:67: [CLIENT] Disconnecting: interrupt
 2018/06/23 14:54:40 client.go:69: Done.
-=======
-2018/06/26 14:44:30 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 14:45:06 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 14:45:09 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 14:45:09 client.go:69: Done.
-2018/06/26 14:45:48 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 14:52:28 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 14:52:47 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 14:52:47 client.go:69: Done.
-2018/06/26 14:52:48 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 14:52:50 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 14:53:27 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 14:53:27 client.go:69: Done.
-2018/06/26 14:53:33 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 14:53:34 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 14:54:41 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 14:54:41 client.go:69: Done.
-2018/06/26 14:54:53 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 14:55:41 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 14:55:41 client.go:69: Done.
-2018/06/26 18:44:27 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 18:44:51 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 18:45:16 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 18:45:16 client.go:69: Done.
-2018/06/26 18:46:36 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 18:46:37 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 18:46:48 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 18:46:48 client.go:69: Done.
-2018/06/26 18:46:49 client.go:25: [CLIENT] Start talking with the server: 
-2018/06/26 18:46:58 client.go:53: [CLIENT] ERROR: Maybe the server went offline: Please check :  EOF
-2018/06/26 18:47:09 client.go:67: [CLIENT] Disconnecting: interrupt
-2018/06/26 18:47:09 client.go:69: Done.
->>>>>>> working
+2018/06/26 19:19:33 client.go:25: [CLIENT] Start talking with the server: 

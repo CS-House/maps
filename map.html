@@ -81,6 +81,8 @@
         var origin = [-122.414, 37.776];
 
         function pubnubListener(m) {
+
+            var message = "'" + m.message + "'"
             var point = JSON.parse(m.message);
             var coords = [parseFloat(point["Latitude"]), parseFloat(point["Longitude"])];
             var deviceId = point["DeviceID"];
@@ -91,7 +93,7 @@
             var pointObj = new Point(deviceId, coords[0], coords[1]);
             var center = getCenter(points);
             if (points.length > 1) {
-                map.setCenter(center);
+                //map.setCenter(center);
             }
 
             var point = {
@@ -189,7 +191,6 @@
                 });
                 points.push(pointObj);
 
-
                 map.on('click', 'points-' + deviceId, function (e) {
                     new mapboxgl.Popup()
                         .setLngLat(e.lngLat)
@@ -215,7 +216,7 @@
                         linear: true
                     });
                 }*/
-                map.setCenter(center);
+                //map.setCenter(center);
             }
 
         }

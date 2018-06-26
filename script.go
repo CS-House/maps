@@ -20,7 +20,7 @@ func main() {
 
 	longs := [10]float64{62.15477, 76.31485, 53.12968, 79.13654, 49.36574, 43.85412, 19.21547, 63.28745, 37.26845, 95.63247}
 
-	ln, err := net.Dial("tcp", "192.168.1.3:8000")
+	ln, err := net.Dial("tcp", "localhost:8000")
 	if err != nil {
 		log.Fatalln("connection messed up", err.Error())
 		panic(err)
@@ -35,12 +35,12 @@ func main() {
 
 		out, _ := exec.Command("/bin/bash", "-c", "date +%d%m%y,%I%M%S | tr -d '\n'").Output()
 
-		lats[integer] = lats[integer] + 0.0015
+		lats[integer] = lats[integer] + 0.015
 		latstr := FloatToString(lats[integer])
 
 		buffer.WriteString(string(out) + "," + latstr + ",N,")
 
-		longs[integer] = longs[integer] + 0.0015
+		longs[integer] = longs[integer] + 0.015
 		longstr := FloatToString(longs[integer])
 		buffer.WriteString(longstr + ",E,0,406,309,11,0,14,1,0,26.4470#")
 
@@ -53,7 +53,7 @@ func main() {
 		}
 		fmt.Println("Wrote ", strconv.Itoa(m)+", bytes")
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 }
 

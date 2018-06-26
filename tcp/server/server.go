@@ -82,7 +82,8 @@ func handler(conn net.Conn) {
 		"",
 		nil)
 
-	db, err := sql.Open("mysql", "root:clear@/latlong")
+	db, err := sql.Open("mysql", "root:Digitalmysql@123@tcp(139.59.70.228:3306)/gowthammedigada")
+
 	check(err)
 
 	for {

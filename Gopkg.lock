@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/Jeffail/gabs"
-  packages = ["."]
-  revision = "7a0fed31069aba77993a518cc2f37b28ee7aa883"
-  version = "1.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/buger/jsonparser"
   packages = ["."]
@@ -34,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c207c3d7660c54cf861a2f920d42c4906a970a03131994e2902ce2b4b9e0a6b1"
+  inputs-digest = "3d429ad0af471b198e1340d1e5d6340180ad60d1cf7d20f9b28386252f37f8d8"
   solver-name = "gps-cdcl"
   solver-version = 1

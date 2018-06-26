@@ -11,14 +11,14 @@ import (
 var db *sql.DB
 
 func main() {
-	db, err := sql.Open("mysql", "root:clear@/kudankulam")
+	db, err := sql.Open("mysql", "rootone:Test!@#$@tcp(139.59.90.102:3306)/kudankulam")
 
 	check(err)
 	fmt.Println("db connected!")
 
-	rows, err := db.Query("select distinct device_id from location_history_current")
+	rows, err := db.Query("select lat_message,lon_message from location_history_current")
 	fmt.Println("rows taken!")
-	var did string
+	var lat, long string
 
 	check(err)
 
@@ -26,11 +26,11 @@ func main() {
 	fmt.Println("deferred.")
 
 	for rows.Next() {
-		err := rows.Scan(&did)
+		err := rows.Scan(&lat, &long)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println(did)
+		log.Println(lat, long)
 	}
 
 	err = rows.Err()

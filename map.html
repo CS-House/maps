@@ -87,7 +87,7 @@
 
             var message = "'" + m.message + "'"
             var point = JSON.parse(m.message);
-            var coords = [parseFloat(point["Latitude"]), parseFloat(point["Longitude"])];
+            var coords = [parseFloat(point["Longitude"]), parseFloat(point["Latitude"])];
             var deviceId = point["DeviceID"];
 
             console.log(coords);

@@ -1,4 +1,4 @@
-var PubNub = require('pubnub')
+var PubNub = require('pubnub');
 
 var pn = new PubNub({
     subscribeKey: "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe",
@@ -8,14 +8,16 @@ var pn = new PubNub({
 
 pn.addListener({
     message: function (m) {
-        var message = "'" + m.message + "'"
-        var str = JSON.parse(m.message)
-        //console.log(str)
-        var did = str["DeviceID"]
-        var lat = str["Latitude"]
-        var long = str["Longitude"]
+        var message = m.message;
+        var arr = JSON.parse(message);
 
-        console.log(did, lat, long)
+        for (var item of arr) {
+            var did = item["DeviceID"];
+            var lat = item["Lat"];
+            var long = item["Long"];
+            console.log(did, lat, long)
+        }
+        console.log('\n\n')
     }
 });
 

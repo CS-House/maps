@@ -16,19 +16,106 @@
   </head>
   <body>
     <!--The div element for the map -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.21.2.js"></script>
-
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTiIJBv3Pa7AYJ0nzH-1_k-uBqLoXcjJw"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/vendor/markerAnimate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/SlidingMarker.min.js"></script>
     <div id="map"></div>
+    
+   
+    <script>
 
-    <script lang="javascript" type="text/javascript" src="map.js"></script>
+	SlidingMarker.initializeGlobally();
 
+    	var map;
+
+	function initMap() {
+    		var markers = []
+
+    		map = new google.maps.Map(document.getElementById('map'), {
+        	center: {
+            		lat: 8.397,
+            		lng: 77.644
+        	},
+        		zoom: 10
+    		});
+
+    	pubnub = new PubNub({
+        	publishKey: '',
+        	subscribeKey: 'sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe'
+    	})
+
+    	pubnub.addListener({
+        	message: pubnubListener,
+        	presence: function (presenceEvent) {
+            		// handle presence
+        	}
+    	});
+
+    	pubnub.subscribe({
+        	channels: ['exp-channel']
+    	});
+
+	var image = '/truck.png'
+
+    	function pubnubListener(m) {
+
+        	var pointsFromSql = JSON.parse(m.message);
+
+        	for (var point of pointsFromSql) {
+		var marker;	
+	    		if (markers.length > 0) {
+				var oldMarker = markers.find(m => m.title == point["DeviceID"]);
+            			var markerIndex = markers.findIndex(m => m.title == point["DeviceID"]);
+
+            			var gpsCurrentLocation = {
+                			lat: parseFloat(point["Lat"]),
+                			lng: parseFloat(point["Long"])
+            			}
+
+				console.log(gpsCurrentLocation, oldMarker)
+
+            		if (oldMarker) {
+                		console.log("Found old point: " + point["DeviceID"]);
+                		markers[markerIndex].setMap(null);
+                		markers[markerIndex].setPosition(gpsCurrentLocation);
+                		markers.splice(markerIndex, 1);
+
+				console.log("marker removed");
+            		} else {
+                    		marker = new google.maps.Marker({
+                    			position: gpsCurrentLocation,
+                    			map: map,
+                    			title: point["DeviceID"]
+                		});
+            		}
+		} 
+		else {
+			marker = new google.maps.Marker({
+                    		position: gpsCurrentLocation,
+                    		map: map,
+                    		title: point["DeviceID"]
+                	});
+		}
+           
+            	markers.push(marker);
+        }
+    }
+}
+    
+google.maps.event.addDomListener(window, 'load', initMap)
+		
+
+  </script>
     <!--Load the API from the specified URL
     * The async attribute allows the browser to render the page while the API loads
     * The key parameter will contain your own API key (which is not needed for this tutorial)
     * The callback parameter executes the initMap() function
     -->
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTiIJBv3Pa7AYJ0nzH-1_k-uBqLoXcjJw&callback=initMap">
-    </script>
   </body>
 </html>
+

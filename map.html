@@ -40,8 +40,7 @@
                 this.lon = lon;
             }
         }
-//pk.eyJ1IjoibXVudWt1dGxhIiwiYSI6ImNqaWFoZDE1YzAxdnEzcG54dDd1M3dhbWEifQ.JdHu_4E9Ky3n-73LSUfwdQ
-//pk.eyJ1IjoiZ293dGhhbS1tdW51a3V0bGEiLCJhIjoiY2ppY200OTNiMDI2dDNwbWxjNmlvdjBiYiJ9.2F2oi7BxSIIzsqUZFYOU7A
+
         mapboxgl.accessToken = 
         'pk.eyJ1IjoiZ293dGhhbS1tdW51a3V0bGEiLCJhIjoiY2ppY200OTNiMDI2dDNwbWxjNmlvdjBiYiJ9.2F2oi7BxSIIzsqUZFYOU7A';
         
@@ -81,147 +80,145 @@
             return [centerLat, centerLong];
         }
 
-        var origin = [-122.414, 37.776];
 
         function pubnubListener(m) {
 
-            var message = "'" + m.message + "'"
-            var point = JSON.parse(m.message);
-            var coords = [parseFloat(point["Latitude"]), parseFloat(point["Longitude"])];
-            var deviceId = point["DeviceID"];
+            var pointmsg = JSON.parse(m.message);
 
-            console.log(coords);
-            console.log(deviceId);
+            for(var item of pointmsg) {
+                console.log(item);
+                var coords = [parseFloat(item["Lat"]), parseFloat(item["Long"])];
+                var deviceId = item["DeviceID"];
 
-            var pointObj = new Point(deviceId, coords[0], coords[1]);
-            var center = getCenter(points);
-            if (points.length > 1) {
-                //map.setCenter(center);
-            }
+                console.log(coords);
+                console.log(deviceId);
 
-            var point = {
-                "type": "FeatureCollection",
-                "features": [{
-                    "type": "Feature",
-                    "properties": {
-                        "name": deviceId,
-                        "icon": "monument"
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": coords
-                    }
-                }]
-            };
+                var pointObj = new Point(deviceId, coords[0], coords[1]);
 
-            var oldPoint = points.find(p => p.id == deviceId)
-            var objIndex = points.findIndex(p => p.id == deviceId)
-            if (oldPoint) {
-                console.log("old point")
-                // If it's an old point
-                var route = {
+                var point = {
                     "type": "FeatureCollection",
                     "features": [{
                         "type": "Feature",
+                        "properties": {
+                            "name": deviceId,
+                            "icon": "monument"
+                        },
                         "geometry": {
-                            "type": "LineString",
-                            "coordinates": [
-                                [oldPoint.lat, oldPoint.lon],
-                                [coords[0], coords[1]]
-                            ]
+                            "type": "Point",
+                            "coordinates": coords
                         }
                     }]
                 };
 
-                // Calculate the distance in kilometers between route start/end point.
-                var lineDistance = turf.lineDistance(route.features[0], 'kilometers');
+                var oldPoint = points.find(p => p.id == deviceId);
+                var objIndex = points.findIndex(p => p.id == deviceId);
+                if (oldPoint) {
+                    console.log("old point")
+                    // If it's an old point
+                    var route = {
+                        "type": "FeatureCollection",
+                        "features": [{
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "LineString",
+                                "coordinates": [
+                                    [oldPoint.lat, oldPoint.lon],
+                                    [coords[0], coords[1]]
+                                ]
+                            }
+                        }]
+                    };
 
-                var arc = [];
+                    // Calculate the distance in kilometers between route start/end point.
+                    var lineDistance = turf.lineDistance(route.features[0], 'kilometers');
 
-                var steps = 500;
+                    var arc = [];
 
-                // Draw an arc between the `origin` & `destination` of the two points
-                for (var i = 0; i < lineDistance; i += lineDistance / steps) {
-                    var segment = turf.along(route.features[0], i, 'kilometers');
-                    arc.push(segment.geometry.coordinates);
-                }
+                    var steps = 500;
 
-                // Update the route with calculated arc coordinates
-                route.features[0].geometry.coordinates = arc;
-
-                // Used to increment the value of the point measurement against the route.
-                var counter = 0;
-
-                function animate() {
-                    // Update point geometry to a new position based on counter denoting
-                    // the index to access the arc.
-                    point.features[0].geometry.coordinates = route.features[0].geometry.coordinates[counter];
-
-                    // Update the source with this new data.
-                    map.getSource('points-' + deviceId).setData(point);
-
-                    // Request the next frame of animation so long the end has not been reached.
-                    if (counter < steps) {
-                        requestAnimationFrame(animate);
+                    // Draw an arc between the `origin` & `destination` of the two points
+                    for (var i = 0; i < lineDistance; i += lineDistance / steps) {
+                        var segment = turf.along(route.features[0], i, 'kilometers');
+                        arc.push(segment.geometry.coordinates);
                     }
 
-                    counter = counter + 1;
-                }
+                    // Update the route with calculated arc coordinates
+                    route.features[0].geometry.coordinates = arc;
 
-                // Reset the counter
-                counter = 0;
+                    // Used to increment the value of the point measurement against the route.
+                    var counter = 0;
 
-                // Restart the animation.
-                animate(counter);
-                points[objIndex].lat = coords[0];
-                points[objIndex].lon = coords[1]; 
-            } else {
-                console.log("New point")
-                map.addLayer({
-                    "id": "points-" + deviceId,
-                    "type": "symbol",
-                    "source": {
-                        "type": "geojson",
-                        "data": point
-                    },
-                    "layout": {
-                        "icon-image": "{icon}-15",
-                        "text-field": "{title}",
-                        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-                        "text-offset": [0, 0.6],
-                        "text-anchor": "top"
+                    function animate() {
+                        // Update point geometry to a new position based on counter denoting
+                        // the index to access the arc.
+                        point.features[0].geometry.coordinates = route.features[0].geometry.coordinates[counter];
+
+                        // Update the source with this new data.
+                        map.getSource('points-' + deviceId).setData(point);
+
+                        // Request the next frame of animation so long the end has not been reached.
+                        if (counter < steps) {
+                            requestAnimationFrame(animate);
+                        }
+
+                        counter = counter + 1;
                     }
-                });
-                points.push(pointObj);
 
-                map.on('click', 'points-' + deviceId, function (e) {
-                    new mapboxgl.Popup()
-                        .setLngLat(e.lngLat)
-                        .setHTML(e.features[0].properties.name)
-                        .addTo(map);
-                });
+                    // Reset the counter
+                    counter = 0;
 
-                // Change the cursor to a pointer when the mouse is over the states layer.
-                map.on('mouseenter', 'points-' + deviceId, function () {
-                    map.getCanvas().style.cursor = 'pointer';
-                });
-
-                // Change it back to a pointer when it leaves.
-                map.on('mouseleave', 'points-' + deviceId, function () {
-                    map.getCanvas().style.cursor = '';
-                });
-
-                var center = getCenter(points);
-                
-                /*if(points.length > 1) {
-                    map.fitBounds([...points.map(p => [p.lon, p.lat])], {
-                        maxZoom: 2,
-                        linear: true
+                    // Restart the animation.
+                    animate(counter);
+                    points[objIndex].lat = coords[0];
+                    points[objIndex].lon = coords[1];
+                } else {
+                    console.log("New point")
+                    map.addLayer({
+                        "id": "points-" + deviceId,
+                        "type": "symbol",
+                        "source": {
+                            "type": "geojson",
+                            "data": point
+                        },
+                        "layout": {
+                            "icon-image": "{icon}-15",
+                            "text-field": "{title}",
+                            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                            "text-offset": [0, 0.6],
+                            "text-anchor": "top"
+                        }
                     });
-                }*/
-                //map.setCenter(center);
-            }
+                    points.push(pointObj);
 
+                    map.on('click', 'points-' + deviceId, function (e) {
+                        new mapboxgl.Popup()
+                                .setLngLat(e.lngLat)
+                                .setHTML(e.features[0].properties.name)
+                                .addTo(map);
+                    });
+
+                    // Change the cursor to a pointer when the mouse is over the states layer.
+                    map.on('mouseenter', 'points-' + deviceId, function () {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+
+                    // Change it back to a pointer when it leaves.
+                    map.on('mouseleave', 'points-' + deviceId, function () {
+                        map.getCanvas().style.cursor = '';
+                    });
+
+                    var center = getCenter(points);
+
+                    /*if(points.length > 1) {
+                        map.fitBounds([...points.map(p => [p.lon, p.lat])], {
+                            maxZoom: 2,
+                            linear: true
+                        });
+                    }*/
+                    //map.setCenter(center);
+                }
+
+            }
         }
     </script>
 

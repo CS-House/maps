@@ -19,13 +19,11 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.21.2.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTiIJBv3Pa7AYJ0nzH-1_k-uBqLoXcjJw"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/vendor/markerAnimate.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marker-animate-unobtrusive/0.2.8/SlidingMarker.min.js"></script>
     <div id="map"></div>
-    
    
     <script>
 
@@ -59,8 +57,6 @@
     	pubnub.subscribe({
         	channels: ['exp-channel']
     	});
-
-	var image = '/truck.png'
 
     	function pubnubListener(m) {
 

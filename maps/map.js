@@ -1,3 +1,5 @@
+SlidingMarker.initializeGlobally();
+
 var pn = new PubNub({
     subscribeKey: "sub-c-18580a92-f8cc-11e5-9086-02ee2ddab7fe",
     publishKey: "pub-c-f3cae627-a107-45d2-a3cc-256467b09e6a",
@@ -76,3 +78,5 @@ function initMap() {
         }
     }
 }
+
+google.maps.event.addDomListener(window, 'load', initMap);

@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/go-sql-driver/mysql"
-	"time"
-	"github.com/pubnub/go/messaging"
 	"encoding/json"
 	"fmt"
-)
+	"time"
 
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/pubnub/go/messaging"
+)
 
 func main() {
 	db, err := sql.Open("mysql", "rootone:Test!@#$@tcp(139.59.90.102:3306)/kudankulam")
@@ -31,6 +31,9 @@ func main() {
 	errorChannel := make(chan []byte, 0)
 
 	for {
+
+		log.Println("\n---DEVICE_ID--- -LATITUDE-  LONGITUDE   ---TIME_CREATED---  SPEED")
+
 		jsonArray := fetchLatest(db)
 
 		jsonObj, _ := json.Marshal(jsonArray)
@@ -56,26 +59,26 @@ func main() {
 
 }
 
-
 func fetchLatest(db *sql.DB) []*SingleJson {
-	rows, err := db.Query("select device_id, lat_message, lon_message, created_date from location_history_current where device_id<>'' and (device_id, created_date) IN (select device_id, max(created_date) from location_history_current group by device_id);")
-	var did,lat,lon,time string
+	rows, err := db.Query("select device_id, lat_message, lon_message, created_date,speed from location_history_current where device_id<>'' and (device_id, created_date) IN (select device_id, max(created_date) from location_history_current group by device_id);")
+	var did, lat, lon, time, speed string
 
 	check(err)
 
 	defer rows.Close()
 
 	var jsonArray = make([]*SingleJson, 0)
+
 	for rows.Next() {
-		err := rows.Scan(&did, &lat,&lon,&time)
+		err := rows.Scan(&did, &lat, &lon, &time, &speed)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println(did,lat,lon,time)
+		log.Println(did, lat, lon, time, speed)
 		jsonElement := &SingleJson{
 			DeviceID: did,
-			Lat: lat,
-			Long: lon,
+			Lat:      lat,
+			Long:     lon,
 		}
 		jsonArray = append(jsonArray, jsonElement)
 	}
@@ -90,8 +93,8 @@ func check(err error) {
 
 type SingleJson struct {
 	DeviceID string
-	Lat string
-	Long string
+	Lat      string
+	Long     string
 }
 
 const (

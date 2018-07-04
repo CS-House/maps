@@ -17,7 +17,7 @@ pn.addListener({
             var long = item["Long"];
             console.log(did, lat, long)
         }
-        console.log('\n\n')
+        console.log('\n')
     }
 });
 

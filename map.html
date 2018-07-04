@@ -87,7 +87,7 @@
 
             for(var item of pointmsg) {
                 console.log(item);
-                var coords = [parseFloat(item["Lat"]), parseFloat(item["Long"])];
+                var coords = [parseFloat(item["Long"]), parseFloat(item["Lat"])];
                 var deviceId = item["DeviceID"];
 
                 console.log(coords);
@@ -101,6 +101,7 @@
                         "type": "Feature",
                         "properties": {
                             "name": deviceId,
+                            "lat": coords[0],
                             "icon": "monument"
                         },
                         "geometry": {

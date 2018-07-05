@@ -10,9 +10,11 @@
     "url": "git+https://github.com/gowtham-munukutla/maps.git"
   },
   "dependencies": {
-    "mongodb": "3.0.10",
-    "sleep": "5.1.1",
+    "connect": "^3.6.6",
     "express": "4.16.3",
+    "mongodb": "3.0.10",
+    "serve-static": "^1.13.2",
+    "sleep": "5.1.1",
     "socket.io": "2.1.1"
   },
   "author": "",

@@ -89,10 +89,11 @@ func handler(conn net.Conn) {
 	for {
 		select {
 		case data := <-dataChan:
-
+			
+			log.Printf("[SERVER} Client %s sent: %s", conn.RemoteAddr(), string(data))
 			jsonObj := parsepub.Parse(string(data))
 
-			log.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
+			log.Printf("[SERVER] Client %s sent converted json: %s", conn.RemoteAddr(), jsonObj)
 			logger.Ls.Printf("[SERVER] Client %s sent: %s", conn.RemoteAddr(), jsonObj)
 
 			var wg sync.WaitGroup

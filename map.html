@@ -46,9 +46,9 @@
         
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v9',
+            style: 'mapbox://styles/mapbox/satellite-streets-v9',
             center: [0, 0],
-            zoom: 2
+            zoom: 4
         });
 
         pubnub = new PubNub({
@@ -101,8 +101,7 @@
                         "type": "Feature",
                         "properties": {
                             "name": deviceId,
-                            "lat": coords[0],
-                            "icon": "monument"
+                            "icon": "car"
                         },
                         "geometry": {
                             "type": "Point",
@@ -226,3 +225,4 @@
 </body>
 
 </html>
+

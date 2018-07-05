@@ -31,8 +31,8 @@ func main() {
 	errorChannel := make(chan []byte, 0)
 
 	for {
-
-		log.Println("\n---DEVICE_ID--- -LATITUDE-  LONGITUDE   ---TIME_CREATED---  SPEED")
+		fmt.Println("\n")
+		log.Println("---DEVICE_ID--- -LATITUDE-  LONGITUDE   ---TIME_CREATED---  SPEED")
 
 		jsonArray := fetchLatest(db)
 
@@ -54,14 +54,14 @@ func main() {
 			fmt.Println("Publish() timeout")
 		}
 
-		time.Sleep(3 * time.Second)
+		time.Sleep(4 * time.Second)
 	}
 
 }
 
 func fetchLatest(db *sql.DB) []*SingleJson {
 	rows, err := db.Query("select device_id, lat_message, lon_message, created_date,speed from location_history_current where device_id<>'' and (device_id, created_date) IN (select device_id, max(created_date) from location_history_current group by device_id);")
-	var did, lat, lon, time, speed string
+	var did,lat,lon,time,speed string
 
 	check(err)
 
@@ -70,11 +70,11 @@ func fetchLatest(db *sql.DB) []*SingleJson {
 	var jsonArray = make([]*SingleJson, 0)
 
 	for rows.Next() {
-		err := rows.Scan(&did, &lat, &lon, &time, &speed)
+		err := rows.Scan(&did, &lat,&lon,&time,&speed)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println(did, lat, lon, time, speed)
+		log.Println(did,lat,lon,time,speed)
 		jsonElement := &SingleJson{
 			DeviceID: did,
 			Lat:      lat,

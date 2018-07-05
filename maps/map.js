@@ -59,6 +59,26 @@ function initMap() {
             var gpsCurrentLocation = {
                 lat: parseFloat(point["Lat"]),
                 lng: parseFloat(point["Long"])
+	    }
+
+            var marker;
+
+            if (oldMarker) {
+                //console.log("Found old point: " + point["DeviceID"]);
+                markers[markerIndex].setMap(null);
+                markers[markerIndex].setPosition(gpsCurrentLocation);
+                markers.remove(oldMarker);
+            } else {
+            	    marker = new google.maps.Marker({
+            	    position: gpsCurrentLocation,
+             	    map: map,
+                    title: point["DeviceID"]
+                });
+            
+            	markers.push(marker);
+            }
+    	}
+
             }
 
             if (oldMarker) {
@@ -76,7 +96,12 @@ function initMap() {
             
             markers.push(marker);
         }
+
     }
 }
 
 google.maps.event.addDomListener(window, 'load', initMap);
+
+
+
+

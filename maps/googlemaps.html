@@ -32,7 +32,14 @@
     	var map;
 
 	function initMap() {
-    		var markers = []
+
+			class Point {
+				constructor(id, lat, lon) {
+        	    	this.id = id;
+            		this.lat = lat;
+            		this.lon = lon;
+		        }
+			}
 
     		map = new google.maps.Map(document.getElementById('map'), {
         	center: {
@@ -58,53 +65,50 @@
         	channels: ['exp-channel']
     	});
 
+		var gmapMarker;
+
     	function pubnubListener(m) {
 
         	var pointsFromSql = JSON.parse(m.message);
-
+			var pointsArray = []
         	for (var point of pointsFromSql) {
-								var marker;	
-								var gpsCurrentLocation = {
-                			lat: parseFloat(point["Lat"]),
-                			lng: parseFloat(point["Long"])
-            		}
+				var currLocPosition = {
+					lat: parseFloat(point["Lat"]),
+                	lng: parseFloat(point["Long"])
+				}
+				var deviceID = point["DeviceID"]
 
-								var did = point["DeviceID"]
+				console.log(pointsArray.length)
+				
+				if (pointsArray.length > 0) {
+					
+					var oldMarker = pointsArray.find(m => m.title == point["DeviceID"]);
+            		var markerIndex = pointsArray.findIndex(m => m.title == point["DeviceID"]);
 
-	    		if (markers.length > 0) {						
-									var oldMarker = markers.find(m => did == point["DeviceID"]);
-            			var markerIndex = markers.findIndex(m => did == point["DeviceID"]);
+					if (oldMarker) {
+						pointsArray[markerIndex].setMap(null);
+                		pointsArray[markerIndex].setPosition(currLocPosition);
+                		pointsArray.splice(markerIndex, 1);
 
-            	
-
-				console.log(gpsCurrentLocation, oldMarker)
-
-            		if (oldMarker) {
-                		// console.log("Found old point: " + point["DeviceID"]);
-                		markers[markerIndex].setMap(null);
-                		markers[markerIndex].setPosition(gpsCurrentLocation);
-                		markers.splice(markerIndex, 1);
-
-				console.log("marker removed");
-            		} else {
-                    		marker = new google.maps.Marker({
-                    			position: gpsCurrentLocation,
-                    			map: map,
-                    			title: point["DeviceID"]
-                		});
-            		}
-		} 
-		else {
-			console.log('1st');
-			marker = new google.maps.Marker({
-                    		position: gpsCurrentLocation,
-                    		map: map,
-                    		title: point["DeviceID"]
-                	});
-		}
-           
-            	markers.push(marker);
-        }
+						console.log("marker removed");
+					} else {
+						gmapMarker = new SlidingMarker({
+    						position: currLocPosition,
+    						map: map,
+    						title: point["DeviceID"],
+    						easing: "easeOutExpo"
+						});
+					}
+				} else {
+					gmapMarker = new SlidingMarker({
+    						position: currLocPosition,
+    						map: map,
+    						title: point["DeviceID"],
+    						easing: "easeOutExpo"
+					});
+				}
+				pointsArray.push(gmapMarker);
+       	 	}
     }
 }
     

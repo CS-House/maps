@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("mysql", "rootone:Test!@#$@tcp(139.59.90.102:3306)/kudankulam")
+	db, err := sql.Open("mysql", "")
 	defer db.Close()
 
 	check(err)

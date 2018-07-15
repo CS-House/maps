@@ -1,6 +1,6 @@
 # GPS Data and Devices on Maps
 
-Get live data from AIS140 and WTD types of devices and show their live tracking on Mapbox or Google Maps using Go in the backend.
+Get live data from  types of devices and show their live tracking on Mapbox or Google Maps using Go in the backend.
 
 ## Introduction
 

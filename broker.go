@@ -7,7 +7,7 @@ import (
 var db *sql.DB
 
 func main() {
-	db, err := sql.Open("mysql", "rootone:Test!@#$@tcp(139.59.90.102:3306)/kudankalam")
+	db, err := sql.Open("mysql", "")
 
 	check(err)
 
